@@ -119,6 +119,7 @@ private:
 
     Controller();
     Controller(const Controller &); // hide copy constructor
+    ~Controller();
     Controller& operator=(const Controller &);
     int year, month, day, hour, min, sec, msec ;
     void run();

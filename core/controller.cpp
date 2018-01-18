@@ -71,6 +71,16 @@ Controller::Controller() : QThread(NULL)
     reestimate_noise = 0 ;
 }
 
+Controller::~Controller() {
+    fftwf_free(fftin);
+    fftin = NULL ;
+    fftwf_destroy_plan(plan);
+    plan = NULL ;
+    free(spectrum);
+    free(hamming_coeffs);
+    delete semspectrum ;
+}
+
 void Controller::hamming_window(double *win,  int win_size)
 {
     int    i;
@@ -145,7 +155,7 @@ void Controller::close() {
     while( m_state != Controller::csEnded ) {
         QThread::msleep(10);
     }
-    radio->close();
+    radio->close();    
 }
 
 float Controller::setDetectionThreshold(float level) {

@@ -47,6 +47,7 @@ class FrameProcessor : public QObject
 public:
 
     explicit FrameProcessor(QObject *parent = 0);
+    ~FrameProcessor();
 
     // change detection threshold for the correlator
     // default is DEFAULT_DETECTION_THRESHOLD dB
@@ -57,6 +58,7 @@ public:
 
     void raz();
     void updateNoiseLevel();
+
 
 signals:
     void newState( QString stateName );

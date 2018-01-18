@@ -33,9 +33,9 @@
 #include "tuningpolicy.h"
 
 
-#define LOGGER_NAME  "PicsatRFE"
-#define LOGGER_FILENAME "picsatrfe.log"
-#define VER_PRODUCTNAME_STR "picsatrfe"
+#define LOGGER_NAME  "PicTalk"
+#define LOGGER_FILENAME "pictalk.log"
+#define VER_PRODUCTNAME_STR "pictalk"
 /**
   In current version the frame is (SymbolRate x Oversample ratio) wide
   This is the DEMODULATOR_SAMPLERATE constant
@@ -68,8 +68,6 @@
 
   */
 #define FRAME_OFFSET_LOW 10e3
-
-#define FIFO_FILENAME "/tmp/test"
 
 #define SYMBOL_RATE 9600 /* picsat modem bitrate */
 #define OVERSAMPLE_RATIO (4)

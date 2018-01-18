@@ -42,7 +42,7 @@ public:
     explicit ZmqServer(QObject *parent = 0);
 
     void addBlock( SampleBlock *b );
-
+    void endRequest();
 
 signals:
 
@@ -51,6 +51,7 @@ private:
     QSemaphore *synchro ;
     QQueue<SampleBlock*> queue ;
     int L ;
+    bool m_end_request ;
 
     void run();
 };

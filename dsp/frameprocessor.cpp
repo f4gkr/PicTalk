@@ -61,6 +61,22 @@ FrameProcessor::FrameProcessor(QObject *parent) : QObject(parent)
     connect( this, SIGNAL(newDataDetected()), this, SLOT(SLOT_newDataReady()));
 }
 
+FrameProcessor::~FrameProcessor() {
+    zmqs->endRequest();
+    if( fftin != NULL ) {
+        fftwf_free(fftin);
+        fftin = NULL ;
+    }
+    if( plan != NULL ) {
+        fftwf_destroy_plan(plan);
+        plan = NULL ;
+    }
+    if( plan_rev != NULL ) {
+        fftwf_destroy_plan(plan_rev);
+        plan_rev = NULL ;
+    }
+}
+
 float FrameProcessor::setDetectionThreshold(float level) {
 #ifdef USE_CORRELATOR
     threshold = -1*level ;

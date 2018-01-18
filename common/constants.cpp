@@ -35,14 +35,6 @@
 GlobalConfig::GlobalConfig() {
     QSettings settings( QApplication::applicationDirPath() + "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
 
-    settings.beginGroup("Interface");
-    if( !settings.contains("FIFO_FILENAME")) {
-        settings.setValue("FIFO_FILENAME", QString(FIFO_FILENAME));
-    } else {
-        cFIFO_FileName = settings.value( "FIFO_FILENAME", QString(FIFO_FILENAME)  ).toString();
-    }
-    settings.endGroup();
-
     settings.beginGroup("Radio");
     if( !settings.contains("RX_FREQUENCY")) {
         settings.setValue("RX_FREQUENCY", (double)(DEFAULT_RX_FREQUENCY/1e6) );

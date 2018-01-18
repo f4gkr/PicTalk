@@ -37,12 +37,18 @@ ZmqServer::ZmqServer(QObject *parent) : QThread(parent)
 {
     L = 0 ;
     synchro = new QSemaphore(0);
+    m_end_request = false ;
 }
 
 void ZmqServer::addBlock( SampleBlock *b ) {
     if( b == NULL )
         return ;
     queue.enqueue(b);
+    synchro->release(1);
+}
+
+void ZmqServer::endRequest() {
+    m_end_request = true ;
     synchro->release(1);
 }
 
@@ -58,8 +64,19 @@ void ZmqServer::run() {
     message[1] = 'Q' ;
     message[3] = 0 ;
 
-    for( ; ; ) {
+    while( !m_end_request ) {
         synchro->acquire(1);
+
+        if( m_end_request ) {
+            // tell decoder that we are leaving
+            // send header
+            zmq_send( socket, (const void *)message, 2, ZMQ_SNDMORE ) ;
+            // say that size is < 0, this is understood by decoder as "end of mission"
+            length = -1 ;
+            zmq_send( socket, (const void *)&length, sizeof(int), 0 );
+            break ;
+        }
+
         SampleBlock *b = queue.dequeue() ;
         if( b == NULL )
             continue ;
@@ -89,5 +106,7 @@ void ZmqServer::run() {
         if( DEBUG_ZMQ_SRV ) qDebug() << "zmq frame pushed" ;
 
     }
-    qDebug() << "ZmqServer::run() end ???" ;
+    if( DEBUG_ZMQ_SRV ) qDebug() << "ZmqServer::run() end ???" ;
+    zmq_close (socket);
+    zmq_ctx_destroy (context);
 }
