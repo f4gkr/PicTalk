@@ -100,37 +100,37 @@ void WebService::service(HttpRequest &request, HttpResponse &response) {
 QJsonObject * WebService::turnOn() {
     emit mturnOn();
     QJsonObject *ss = new QJsonObject();
-    ss->operator []("request") = "start" ;
-    ss->operator []("status") = "ok" ;
+    ss->operator []( QString("request")) = "start" ;
+    ss->operator []( QString("status")) = "ok" ;
     return(ss);
 }
 
 QJsonObject * WebService::turnOff() {
     emit mturnOn();
     QJsonObject *ss = new QJsonObject();
-    ss->operator []("request") = "stop" ;
-    ss->operator []("status") = "ok" ;
+    ss->operator []( QString("request")) = "stop" ;
+    ss->operator []( QString("status")) = "ok" ;
     return(ss);
 }
 
 QJsonObject * WebService::tuneTo(qint64 f) {
     emit mtuneTo(f);
     QJsonObject *ss = new QJsonObject();
-    ss->operator []("request") = "tune" ;
-    ss->operator []("frequency") = QString::number( ((double)f)/1e6,'f',6);
-    ss->operator []("status") = "ok" ;
+    ss->operator []( QString("request")) = "tune" ;
+    ss->operator []( QString("frequency") ) = QString::number( ((double)f)/1e6,'f',6);
+    ss->operator []( QString( "status") ) = "ok" ;
     return(ss);
 }
 
 QJsonObject * WebService::getStatus() {
     QJsonObject *ss = new QJsonObject();
-    ss->operator []("request") = "status" ;
-    ss->operator []("status") = "ok" ;
+    ss->operator []( QString("request")) = "status" ;
+    ss->operator []( QString("status")) = "ok" ;
     sem->acquire(1);
-    ss->operator []("rx_frequency") = QString::number( ((double)frequency)/1e6,'f',6);
-    ss->operator []("radio_on") = radio_on ? QString("on"):QString("off") ;
-    ss->operator []("power_level")  = QString::number( powerlevel,'f',2);
-    ss->operator []("detectorState") = detectorState ;
+    ss->operator []( QString("rx_frequency")) = QString::number( ((double)frequency)/1e6,'f',6);
+    ss->operator []( QString("radio_on")) = radio_on ? QString("on"):QString("off") ;
+    ss->operator []( QString("power_level"))  = QString::number( powerlevel,'f',2);
+    ss->operator []( QString("detectorState")) = detectorState ;
     sem->release(1);
     return(ss);
 }
