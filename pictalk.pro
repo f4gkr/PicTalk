@@ -25,7 +25,6 @@
 #
 #==========================================================================================
 #
-#-------------------------------------------------
 TARGET = pictalk
 TEMPLATE = app
 
@@ -43,9 +42,19 @@ LIBS +=  -lusb-1.0 -lpthread -lfftw3f -lm -lzmq
 win32 {
     INCLUDEPATH += C:/msys64/usr/include
     LIBS += -lhidapi
-} else {
-    LIBS += -lgps -lhidapi-hidraw
 }
+
+linux {
+    LIBS += -lgps -lhidapi-hidraw
+    contains( QMAKE_HOST.arch, arm.* ):{
+        #specific instructions for RPiCompile
+
+    } else {
+        # generic Linux compile...
+
+    }
+}
+
 
 SOURCES += \
     main.cpp\
