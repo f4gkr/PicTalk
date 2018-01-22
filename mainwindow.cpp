@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     radio = NULL ;
-    webservice = NULL ;
     setAttribute(Qt::WA_DeleteOnClose);
 
     QWidget *center_widget = new QWidget;
@@ -290,14 +289,6 @@ void MainWindow::setRadio(RxDevice *device ) {
     mainFDisplay->setFrequency(gc.cRX_FREQUENCY);
 }
 
-
-void MainWindow::setWebService( WebService *service ) {
-    this->webservice = service ;
-    if( this->webservice != NULL ) {
-        connect( webservice, SIGNAL(mtuneTo(qint64)),
-                 mainFDisplay, SLOT(setFrequency(qint64)), Qt::QueuedConnection );
-    }
-}
 
 void MainWindow::SLOT_userTunesFreqWidget(qint64 newFrequency) {
     Controller& ctrl = Controller::getInstance() ;

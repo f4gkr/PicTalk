@@ -39,7 +39,7 @@ RxDevice *RxHardwareSelector::getReceiver() {
 
     dongle = new RTLSDR(0);
     if( dongle->getDeviceCount() > 0 ) {
-        if( dongle->setRxSampleRate( SYMBOL_RATE * 200 ) == 0 ) { // sampling rate is 1.92 MHz
+        if( dongle->setRxSampleRate( SYMBOL_RATE * 100 ) == 0 ) { // sampling rate is .960 MHz
             return(dongle);
         }
     }

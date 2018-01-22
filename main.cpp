@@ -40,9 +40,7 @@
 #include "hardware/rxhardwareselector.h"
 #include "hardware/gpdsd.h"
 #include "common/QLogger.h"
-
-#include "httpserver/httplistener.h"
-#include "webinterface/webservice.h"
+#include "dsp/pythondecoder.h"
 
 #define SPLASH_NAME ":/logo.png"
 
@@ -62,7 +60,6 @@ int main(int argc, char *argv[])
 
     RxDevice *radio = NULL ;
 
-    HttpListener* webserver;
     QApplication a(argc, argv);
     QApplication::setStyle(QStyleFactory::create("plastique"));
 
@@ -73,8 +70,13 @@ int main(int argc, char *argv[])
     splash.showMessage( a.translate( "QObject", "Loading..."),  Qt::AlignLeft | Qt::AlignTop, Qt::white);
     I::sleep(1);
 
+    // testing python
+    //PythonDecoder* dec = new PythonDecoder( QString("c:\\temp\\python\\decoder.py"));
+    //dec->run();
+
     // load configuration file
     GlobalConfig& global = GlobalConfig::getInstance() ;
+    (void) global ;
 
     QLogger::QLoggerManager *manager = QLogger::QLoggerManager::getInstance();
     manager->addDestination( LOGGER_FILENAME, QStringList( LOGGER_NAME ),  QLogger::TraceLevel);
@@ -101,16 +103,8 @@ int main(int argc, char *argv[])
     control.setRadio( radio );
     control.start();
 
-    // start web server
-    QSettings settings( QApplication::applicationDirPath() + "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
-    settings.beginGroup("WebServer");
-    WebService *ws = new WebService(&a);
-    webserver = new HttpListener( &settings, ws, &a);
-    control.setWebService( ws );
-
     MainWindow *w = new MainWindow();
     w->setRadio( radio );
-    w->setWebService( ws );
     splash.finish(w);
     w->show();
 

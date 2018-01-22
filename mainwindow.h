@@ -44,7 +44,6 @@
 #include "ui/gkdial.h"
 #include "ui/gkpushbutton.h"
 #include "ui/ledindicator.h"
-#include "webinterface/webservice.h"
 #include "common/constants.h"
 
 class MainWindow : public QMainWindow
@@ -56,7 +55,6 @@ public:
     ~MainWindow();
 
     void setRadio( RxDevice* device );
-    void setWebService( WebService *service );
 
 public slots:
     void SLOT_powerLevel( float level ) ;
@@ -96,7 +94,6 @@ private:
 
     LedIndicator* decoding ;
     QLineEdit* decoderStatus ;
-    WebService *webservice;
     RxDevice* radio ;
 #ifndef USE_CORRELATOR
     IndicatorWidget *levelWidget ;

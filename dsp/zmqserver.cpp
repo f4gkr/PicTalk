@@ -30,14 +30,14 @@
 #include <zmq.h>
 #include <unistd.h>
 #include <QDebug>
-
+#include <QApplication>
 #define DEBUG_ZMQ_SRV (0)
 
 ZmqServer::ZmqServer(QObject *parent) : QThread(parent)
 {
     L = 0 ;
     synchro = new QSemaphore(0);
-    m_end_request = false ;
+    m_end_request = false ;    
 }
 
 void ZmqServer::addBlock( SampleBlock *b ) {

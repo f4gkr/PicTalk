@@ -38,7 +38,6 @@
 #include "hardware/rxdevice.h"
 #include "dsp/overlapsave.h"
 #include "dsp/frameprocessor.h"
-#include "webinterface/webservice.h"
 
 class Controller : public QThread
 {
@@ -51,8 +50,6 @@ public:
     }
 
     void setRadio( RxDevice* radio ) ;
-    void setWebService( WebService *service );
-
     void doNoiseEstimation();
 
     bool isAcquiring();
@@ -91,7 +88,6 @@ private:
 
     RxDevice *radio ;
 
-    WebService *webservice;
     OverlapSave *channelizer ;
     FrameProcessor *processor ;
 

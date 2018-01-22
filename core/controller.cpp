@@ -38,7 +38,6 @@
 Controller::Controller() : QThread(NULL)
 {
     radio = NULL ;
-    webservice = NULL ;
 
     m_stop = false ;
     m_state = Controller::csInit ;
@@ -108,15 +107,6 @@ void Controller::setRadio(RxDevice *radio) {
     connect( this, SIGNAL(radioStop()), radio, SLOT(SLOT_stop()), Qt::QueuedConnection );
 }
 
-void Controller::setWebService( WebService *service ) {
-    this->webservice = service ;
-    if( webservice != NULL ) {
-        GlobalConfig& gc = GlobalConfig::getInstance() ;
-        webservice->reportStatus( (m_state==Controller::csRun), gc.getReceivedFrequency(tp) );
-        connect( webservice, SIGNAL(mturnOn()), this, SLOT(startAcquisition()), Qt::QueuedConnection );
-        connect( webservice, SIGNAL(mturnOff()), this, SLOT(stopAcquisition()), Qt::QueuedConnection );
-    }
-}
 
 void Controller::setRxCenterFrequency(qint64 frequency) {
     this->rx_tune_request = frequency ;
@@ -221,9 +211,6 @@ void Controller::run() {
             emit radioStart();
 
             next_state = Controller::csRun ;
-            if( webservice != NULL ) {
-                webservice->reportStatus( true, gc.getReceivedFrequency(tp) );
-            }
 
             break ;
 
@@ -247,18 +234,12 @@ void Controller::run() {
                     radio->setRxCenterFreq( tp );
                 }
                 processor->raz();
-                if( webservice != NULL ) {
-                    webservice->reportStatus( true, gc.getReceivedFrequency(tp) );
-                }
             }
             break ;
 
         case Controller::csStop:
             emit radioStop();
             next_state = Controller::csIdle ;
-            if( webservice != NULL ) {
-                webservice->reportStatus( true, gc.getReceivedFrequency(tp) );
-            }
             break ;
         }
     }

@@ -34,13 +34,22 @@ DEFINES += BUILD_DATE='"\\\"$(shell  date +\"%Y%m%d\")\\\""'
 
 
 include( qwt/qwt.pri )
-include( httpserver/httpserver.pri)
 
 LIBS +=  -lusb-1.0 -lpthread -lfftw3f -lm -lzmq
 
 win32 {
+    # pkg-config --cflags --libs python3
     INCLUDEPATH += C:/msys64/usr/include
     LIBS += -lhidapi
+
+    # for python embed, see https://docs.python.org/3/extending/embedding.html
+    # paragraph 1.6. Compiling and Linking under Unix-like systems
+    #INCLUDEPATH += C:/Python36/include
+    #QMAKE_LFLAGS += -LC:/Python36/libs
+    #QMAKE_CFLAGS += -fwrapv -D__USE_MINGW_ANSI_STDIO=1  -DNDEBUG  -DNDEBUG
+    #LIBS += -lpython36  -lversion -lm
+    #DEFINES += D_hypot=hypot
+    DESTDIR = /msys64/home/sylvain/code/pictalk_bindist
 }
 
 linux {
@@ -76,7 +85,6 @@ SOURCES += \
     common/constants.cpp \
     ui/plotter.cpp \
     ui/bookmarks.cpp \
-    webinterface/webservice.cpp \
     common/tuningpolicy.cpp \
     dsp/zmqserver.cpp \
     hardware/funcube/fcdwidget.cpp \
@@ -108,7 +116,8 @@ SOURCES += \
     hardware/mirisdr/src/convert/base.c \
     hardware/miricscpp.cpp \
     ui/gkpushbutton.cpp \
-    ui/ledindicator.cpp
+    ui/ledindicator.cpp \
+    #dsp/pythondecoder.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -130,7 +139,6 @@ HEADERS  += \
     core/sampleblock.h \
     ui/plotter.h \
     ui/bookmarks.h \
-    webinterface/webservice.h \
     common/datatypes.h \
     common/tuningpolicy.h \
     dsp/zmqserver.h \
@@ -158,7 +166,8 @@ HEADERS  += \
     hardware/mirisdr/include/mirisdr_export.h \
     hardware/miricscpp.h \
     ui/gkpushbutton.h \
-    ui/ledindicator.h
+    ui/ledindicator.h \
+    #dsp/pythondecoder.h
 
 RESOURCES += \
     resources/picsat.qrc
