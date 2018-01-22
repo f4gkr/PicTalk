@@ -33,6 +33,7 @@
 #include <QLCDNumber>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QTabWidget>
 #include "common/tuningpolicy.h"
 #include "ui/plotter.h"
 #include "hardware/rxdevice.h"
@@ -42,6 +43,7 @@
 #include "ui/qcustomplot.h"
 #include "ui/gkdial.h"
 #include "ui/gkpushbutton.h"
+#include "ui/ledindicator.h"
 #include "webinterface/webservice.h"
 #include "common/constants.h"
 
@@ -83,6 +85,7 @@ private slots:
 private:
     int received_frame ;
     int msg_count ;
+    QTabWidget *tabWidget ;
     CPlotter *wf ;
     CFreqCtrl *mainFDisplay ;
     gkDial *fft_update_rate ;
@@ -91,6 +94,7 @@ private:
     gkDial *detection_threshold ;
     QLCDNumber *zuluDisplay ;
 
+    LedIndicator* decoding ;
     QLineEdit* decoderStatus ;
     WebService *webservice;
     RxDevice* radio ;

@@ -62,8 +62,6 @@ MainWindow::MainWindow(QWidget *parent)
     tb_layout->setAlignment( Qt::AlignLeft );
     tb_layout->setContentsMargins( 1,1,1,1);
 
-
-
     mainFDisplay = new CFreqCtrl();
     mainFDisplay->setMinimumWidth(200);
     mainFDisplay->setMinimumWidth(500);
@@ -105,11 +103,17 @@ MainWindow::MainWindow(QWidget *parent)
     crlayout->addWidget(gain_rx);
     cb_layout->addWidget( cr_widget);
 
+
+
     // Waterfall display
     GlobalConfig& cnf = GlobalConfig::getInstance() ;
+    tabWidget = new QTabWidget();
+    tabWidget->setContentsMargins(0,0,0,0);
+    tabWidget->setTabPosition( QTabWidget::South );
 
+    // add wf in tab
     wf = new CPlotter();
-    wf->setMinimumWidth(250);
+    wf->setMinimumWidth(350);
     wf->setSampleRate( 1e6 );
     wf->setCenterFreq( cnf.cRX_FREQUENCY );
     wf->setDemodCenterFreq( cnf.cRX_FREQUENCY );
@@ -119,7 +123,11 @@ MainWindow::MainWindow(QWidget *parent)
     wf->setMaxDB(-50.0);
     wf->setMinDB(-130);
     wf->setFftFill(true);
-    cb_layout->addWidget( wf );
+    tabWidget->addTab( wf,tr("Waterfall"));
+
+    // add decoder ui
+    tabWidget->addTab( new QWidget(), tr("Decoder"));
+    cb_layout->addWidget( tabWidget );
 
 
     // center left
@@ -149,7 +157,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     detection_threshold= new gkDial(4,tr("Threshold"));
 #ifdef USE_CORRELATOR
-    detection_threshold->setScale(2,2*DEFAULT_AC_THRESHOLD);
+    detection_threshold->setScale(1,100);
     detection_threshold->setValue(DEFAULT_AC_THRESHOLD);
 #else
     detection_threshold->setScale(2,20);
@@ -165,10 +173,19 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     cllayout->addWidget( new QLabel(tr("Detector state:")));
+
+    QWidget *statusW = new QWidget();
+    QHBoxLayout *hbl = new QHBoxLayout();
+    statusW->setLayout( hbl );
+    decoding = new LedIndicator();
+    hbl->addWidget( decoding );
+
     decoderStatus = new QLineEdit();
     decoderStatus->setToolTip(tr("Current status of frame detector"));
     decoderStatus->setMaxLength(15);
-    cllayout->addWidget( decoderStatus );
+    hbl->addWidget( decoderStatus );
+
+    cllayout->addWidget( statusW );
 
 
     cb_layout->addWidget( cl_widget);
@@ -185,13 +202,14 @@ MainWindow::MainWindow(QWidget *parent)
     levelplot = new QCustomPlot();
     levelplot->addGraph();
     levelplot->xAxis->setLabel(tr("Received Frame"));
+    levelplot->xAxis->setRange(0, 1);
 #ifdef USE_CORRELATOR
     levelplot->yAxis->setLabel("Corr. Level");
+    levelplot->yAxis->setRange(0, 100);
 #else
     levelplot->yAxis->setLabel("RMS Level");
-#endif
-    levelplot->xAxis->setRange(0, 1);
     levelplot->yAxis->setRange(-70, -30);
+#endif
     levelplot->setMinimumHeight(150);
     levelplot->addGraph();
     levelplot->graph(1)->setPen(QPen(Qt::red));
@@ -327,6 +345,11 @@ void MainWindow::SLOT_userChangesFFTRate(int value) {
 
 void MainWindow::SLOT_frameDetectorStateChanged( QString stateName ) {
     decoderStatus->setText( stateName );
+    if( stateName == "sFrameStart") {
+        decoding->setState(true);
+    } else {
+        decoding->setState(false);
+    }
 }
 
 void MainWindow::SLOT_newSpectrum(int len , TuningPolicy *tp ) {

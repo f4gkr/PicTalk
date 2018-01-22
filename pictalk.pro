@@ -29,7 +29,6 @@ TARGET = pictalk
 TEMPLATE = app
 
 QT       += core gui multimedia
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 DEFINES += BUILD_DATE='"\\\"$(shell  date +\"%Y%m%d\")\\\""'
 
@@ -108,7 +107,8 @@ SOURCES += \
     hardware/mirisdr/src/convert/504_s16.c \
     hardware/mirisdr/src/convert/base.c \
     hardware/miricscpp.cpp \
-    ui/gkpushbutton.cpp
+    ui/gkpushbutton.cpp \
+    ui/ledindicator.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -157,7 +157,8 @@ HEADERS  += \
     hardware/mirisdr/include/mirisdr.h \
     hardware/mirisdr/include/mirisdr_export.h \
     hardware/miricscpp.h \
-    ui/gkpushbutton.h
+    ui/gkpushbutton.h \
+    ui/ledindicator.h
 
 RESOURCES += \
     resources/picsat.qrc

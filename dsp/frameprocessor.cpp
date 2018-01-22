@@ -41,7 +41,7 @@ FrameProcessor::FrameProcessor(QObject *parent) : QObject(parent)
 {
     m_bandwidth = 0 ;
 #ifdef USE_CORRELATOR
-    threshold = detection_threshold = -40 ;
+    threshold = detection_threshold = 40 ;
 #else
     detection_threshold = DEFAULT_DETECTION_THRESHOLD ;
 #endif
@@ -166,7 +166,7 @@ int FrameProcessor::processDataAD( TYPECPX* IQsamples, int L , int sampleRate ) 
             noise_floor = -1 ;
             rms_power = 0 ;
             next_state = sSearchFrame ;
-            A = B = C = level4display = -50 ;
+            A = B = C = level4display = 0 ;
             for( int i=0 ; i < FFT_SIZE ; i++ ) {
                 fftin[i][0] = fftin[i][1] = 0 ;
             }
@@ -188,7 +188,9 @@ int FrameProcessor::processDataAD( TYPECPX* IQsamples, int L , int sampleRate ) 
                     N++ ;
                 }
                 A = A / N ;
-                v = 20*log10f( A / root );
+                v = (60+20*log10f( A / root ))*100.0/60.0;
+                v = qMax( v, (float)0);
+                v = qMin( v, (float)100 );
 
                 if( v > threshold ) {
                     if( (L-remaining_samples) > 0 ) {
@@ -246,7 +248,9 @@ int FrameProcessor::processDataAD( TYPECPX* IQsamples, int L , int sampleRate ) 
                     N++ ;
                 }
                 A = A / N ;
-                v = 20*log10f( A / root );
+                v = (60+20*log10f( A / root ))*100.0/60.0;
+                v = qMax( v, (float)0);
+                v = qMin( v, (float)100 );
 
                 if( v < threshold ) {
                     next_state = sFrameEnds ;
