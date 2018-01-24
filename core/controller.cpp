@@ -223,7 +223,7 @@ void Controller::run() {
 
             emit radioStart();
             if( webs != NULL ) {
-                webs->reportStatus( true, tp->rx_hardware_frequency );
+                webs->reportStatus( true, tp->rx_hardware_frequency + tp->channelizer_offset );
             }
             next_state = Controller::csRun ;
 

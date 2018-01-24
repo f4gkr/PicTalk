@@ -17,8 +17,6 @@ public:
     explicit WebService( QObject *parent = 0);
     void service(HttpRequest& request, HttpResponse& response);
 
-
-public slots:
     void reportStatus( bool on, qint64 frequency );
 
 signals:
