@@ -125,7 +125,10 @@ MainWindow::MainWindow(QWidget *parent)
     tabWidget->addTab( wf,tr("Waterfall"));
 
     // add decoder ui
-    tabWidget->addTab( new QWidget(), tr("Decoder"));
+    pythonText = new QTextEdit();
+    pythonText->setReadOnly(true);
+
+    tabWidget->addTab( pythonText, tr("Decoder"));
     cb_layout->addWidget( tabWidget );
 
 
@@ -252,6 +255,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect( &gpsd, SIGNAL(hasGpsTime(int,int,int,int,int,int,int)), this,
              SLOT(SLOT_hasGpsTime(int,int,int,int,int,int,int)),Qt::QueuedConnection);
 
+    dec = NULL ;
+
 }
 
 void MainWindow::setRadio(RxDevice *device ) {
@@ -281,14 +286,36 @@ void MainWindow::setRadio(RxDevice *device ) {
     } else {
         gain_rx->setVisible(false);
         if( radio->getDisplayWidget() != NULL ) {
-              crlayout->addWidget(  radio->getDisplayWidget() );
+            crlayout->addWidget(  radio->getDisplayWidget() );
         }
     }
 
     GlobalConfig& gc = GlobalConfig::getInstance() ;
     mainFDisplay->setFrequency(gc.cRX_FREQUENCY);
+
+    // configure Python decoder interface
+    zmqConsole = new ZmqPython();
+    connect( zmqConsole, SIGNAL(message(QString)), this, SLOT(PythonMessage(QString)),
+             Qt::QueuedConnection );
+
+    dec = new PythonDecoder();
+    dec->start(); // start the decoder
+    zmqConsole->start();
 }
 
+void MainWindow::PythonMessage( QString msg ) {
+    pythonText->moveCursor (QTextCursor::End);
+    pythonText->insertPlainText (msg);
+    pythonText->moveCursor (QTextCursor::End);
+
+    QFile file("out.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    out << msg ;
+    file.close();
+}
 
 void MainWindow::SLOT_userTunesFreqWidget(qint64 newFrequency) {
     Controller& ctrl = Controller::getInstance() ;
@@ -358,6 +385,10 @@ void MainWindow::SLOT_newSpectrum(int len , TuningPolicy *tp ) {
     wf->setDemodCenterFreq( tp->rx_hardware_frequency + tp->channelizer_offset );
     wf->setNewFttData( power_dB, len );
     wf->blockSignals(false);
+
+    mainFDisplay->blockSignals(true);
+    mainFDisplay->resetToFrequency( tp->rx_hardware_frequency + tp->channelizer_offset );
+    mainFDisplay->blockSignals(false);
 }
 
 MainWindow::~MainWindow()
@@ -378,8 +409,8 @@ void MainWindow::SLOT_powerLevel( float level )  {
     min_level = qMin( min_level, level );
     max_level = qMax( max_level, level) ;
     if( fabs(max_level-min_level) < 5 ) {
-         min_level -= 2.5 ;
-         max_level += 2.5 ;
+        min_level -= 2.5 ;
+        max_level += 2.5 ;
     }
 
 
@@ -442,10 +473,10 @@ void MainWindow::SLOT_gpsdAsError( int code ) {
 
 
 void MainWindow::endProgram() {
-     radio->stopAcquisition() ;
-     GPSD& gpsd= GPSD::getInstance() ;
-     gpsd.shutdown();
-     Controller& ctrl = Controller::getInstance() ;
-     ctrl.close();
-     exit(0);
+    radio->stopAcquisition() ;
+    GPSD& gpsd= GPSD::getInstance() ;
+    gpsd.shutdown();
+    Controller& ctrl = Controller::getInstance() ;
+    ctrl.close();
+    exit(0);
 }

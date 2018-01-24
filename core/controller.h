@@ -38,6 +38,7 @@
 #include "hardware/rxdevice.h"
 #include "dsp/overlapsave.h"
 #include "dsp/frameprocessor.h"
+#include "webinterface/webservice.h"
 
 class Controller : public QThread
 {
@@ -49,6 +50,7 @@ public:
         return instance;
     }
 
+    void setWebservice( WebService *ws );
     void setRadio( RxDevice* radio ) ;
     void doNoiseEstimation();
 
@@ -65,7 +67,7 @@ signals:
     void newSpectrumAvailable(int len, TuningPolicy* tp);
     void powerLevel( float level ) ;
     void newState( QString stateName );
-    void  newSNRThreshold( float threshold );
+    void newSNRThreshold( float threshold );
 
     void radioStart();
     void radioStop();
@@ -85,7 +87,7 @@ public slots:
 
 private:
     enum  { csInit=0, csIdle=1, csStart=2,csRun=3, csStop=4, csEnded=99 } ;
-
+    WebService* webs ;
     RxDevice *radio ;
 
     OverlapSave *channelizer ;

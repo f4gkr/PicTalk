@@ -40,7 +40,9 @@
 #include "hardware/rxhardwareselector.h"
 #include "hardware/gpdsd.h"
 #include "common/QLogger.h"
-#include "dsp/pythondecoder.h"
+
+#include "httpserver/httplistener.h"
+#include "webinterface/webservice.h"
 
 #define SPLASH_NAME ":/logo.png"
 
@@ -70,10 +72,6 @@ int main(int argc, char *argv[])
     splash.showMessage( a.translate( "QObject", "Loading..."),  Qt::AlignLeft | Qt::AlignTop, Qt::white);
     I::sleep(1);
 
-    // testing python
-    //PythonDecoder* dec = new PythonDecoder( QString("c:\\temp\\python\\decoder.py"));
-    //dec->run();
-
     // load configuration file
     GlobalConfig& global = GlobalConfig::getInstance() ;
     (void) global ;
@@ -98,7 +96,13 @@ int main(int argc, char *argv[])
         msgBox.exec() ;
         return(-1);
     }
-
+    // start web server
+    QSettings settings( QApplication::applicationDirPath() + "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+    settings.beginGroup("WebServer");
+    WebService *ws = new WebService(&a);
+    HttpListener* webserver = new HttpListener( &settings, ws, &a);
+    control.setWebservice( ws );
+    (void) webserver ;
 
     control.setRadio( radio );
     control.start();

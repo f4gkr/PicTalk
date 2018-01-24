@@ -68,6 +68,7 @@ Controller::Controller() : QThread(NULL)
     spectrum_interleave = 1 ;
     spectrum_interleave_value = 1 ;
     reestimate_noise = 0 ;
+    webs = NULL ;
 }
 
 Controller::~Controller() {
@@ -78,6 +79,18 @@ Controller::~Controller() {
     free(spectrum);
     free(hamming_coeffs);
     delete semspectrum ;
+}
+
+void Controller::setWebservice(WebService *ws) {
+    this->webs = ws ;
+    if( webs != NULL ) {
+        connect( webs, SIGNAL(mtuneTo(qint64)),
+                 this, SLOT(setRxCenterFrequency(qint64)), Qt::QueuedConnection );
+        connect( webs, SIGNAL(mturnOn()),
+                 this, SLOT(startAcquisition()), Qt::QueuedConnection);
+        connect( webs, SIGNAL(mturnOff()),
+                 this, SLOT(stopAcquisition()), Qt::QueuedConnection );
+    }
 }
 
 void Controller::hamming_window(double *win,  int win_size)
@@ -209,7 +222,9 @@ void Controller::run() {
             channelizer->setCenterOfWindow( tp->channelizer_offset );
 
             emit radioStart();
-
+            if( webs != NULL ) {
+                webs->reportStatus( true, tp->rx_hardware_frequency );
+            }
             next_state = Controller::csRun ;
 
             break ;
@@ -240,6 +255,9 @@ void Controller::run() {
         case Controller::csStop:
             emit radioStop();
             next_state = Controller::csIdle ;
+            if( webs != NULL ) {
+                webs->reportStatus( false, tp->rx_hardware_frequency + tp->channelizer_offset  );
+            }
             break ;
         }
     }

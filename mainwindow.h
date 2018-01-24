@@ -34,6 +34,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTabWidget>
+#include <QTextEdit>
 #include "common/tuningpolicy.h"
 #include "ui/plotter.h"
 #include "hardware/rxdevice.h"
@@ -45,6 +46,7 @@
 #include "ui/gkpushbutton.h"
 #include "ui/ledindicator.h"
 #include "common/constants.h"
+#include "dsp/pythondecoder.h"
 
 class MainWindow : public QMainWindow
 {
@@ -80,6 +82,8 @@ private slots:
     void SLOT_gpsdAsError( int code );
     void endProgram();
 
+    void PythonMessage( QString msg );
+
 private:
     int received_frame ;
     int msg_count ;
@@ -95,6 +99,11 @@ private:
     LedIndicator* decoding ;
     QLineEdit* decoderStatus ;
     RxDevice* radio ;
+
+    PythonDecoder* dec ;
+    ZmqPython* zmqConsole ;
+    QTextEdit* pythonText ;
+
 #ifndef USE_CORRELATOR
     IndicatorWidget *levelWidget ;
 #endif

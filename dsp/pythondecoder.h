@@ -4,19 +4,38 @@
 
 #include <QObject>
 #include <QThread>
+#include <stdio.h>
+
+class ZmqPython : public QThread
+{
+    Q_OBJECT
+public:
+    explicit ZmqPython(QObject *parent=0);
+
+signals:
+    void message( QString msg );
+
+private:
+    void run();
+};
 
 class PythonDecoder : public QThread
 {
     Q_OBJECT
 public:
-    explicit PythonDecoder(QString scriptName, QObject *parent = nullptr);
-    void run();
+    explicit PythonDecoder(QObject *parent = nullptr);
+
 signals:
+    void pythonStarts();
+    void pythonEnds();
 
 public slots:
 private:
     QString mPythonScript ;
+    FILE *code ;
+    ZmqPython* zmq ;
 
+    void run();
 };
 
 #endif // PYTHONDECODER_H

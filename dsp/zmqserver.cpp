@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <QDebug>
 #include <QApplication>
-#define DEBUG_ZMQ_SRV (0)
+#define DEBUG_ZMQ_SRV (1)
 
 ZmqServer::ZmqServer(QObject *parent) : QThread(parent)
 {

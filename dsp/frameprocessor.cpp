@@ -79,7 +79,7 @@ FrameProcessor::~FrameProcessor() {
 
 float FrameProcessor::setDetectionThreshold(float level) {
 #ifdef USE_CORRELATOR
-    threshold = -1*level ;
+    threshold =  level ;
     if( FRAME_DEBUG ) qDebug() << " threshold is now " << threshold ;
     return( threshold );
 #else
