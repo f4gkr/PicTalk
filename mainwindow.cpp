@@ -158,6 +158,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     detection_threshold= new gkDial(4,tr("Threshold"));
+    threshold_level = (float)DEFAULT_AC_THRESHOLD ;
 #ifdef USE_CORRELATOR
     detection_threshold->setScale(1,100);
     detection_threshold->setValue(DEFAULT_AC_THRESHOLD);
@@ -203,6 +204,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     levelplot = new QCustomPlot();
     levelplot->addGraph();
+    levelplot->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
     levelplot->xAxis->setLabel(tr("Received Frame"));
     levelplot->xAxis->setRange(0, 1);
 #ifdef USE_CORRELATOR
@@ -308,13 +310,13 @@ void MainWindow::PythonMessage( QString msg ) {
     pythonText->insertPlainText (msg);
     pythonText->moveCursor (QTextCursor::End);
 
-    QFile file("out.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
+//    QFile file("out.txt");
+//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+//        return;
 
-    QTextStream out(&file);
-    out << msg ;
-    file.close();
+//    QTextStream out(&file);
+//    out << msg ;
+//    file.close();
 }
 
 void MainWindow::SLOT_userTunesFreqWidget(qint64 newFrequency) {
@@ -386,8 +388,11 @@ void MainWindow::SLOT_newSpectrum(int len , TuningPolicy *tp ) {
     wf->setNewFttData( power_dB, len );
     wf->blockSignals(false);
 
+}
+
+void MainWindow::SLOT_ExternalSetFrequency(qint64 frequency) {
     mainFDisplay->blockSignals(true);
-    mainFDisplay->resetToFrequency( tp->rx_hardware_frequency + tp->channelizer_offset );
+    mainFDisplay->resetToFrequency( frequency );
     mainFDisplay->blockSignals(false);
 }
 
@@ -407,7 +412,10 @@ void MainWindow::SLOT_powerLevel( float level )  {
 
 
     min_level = qMin( min_level, level );
+    min_level = qMin( min_level, threshold_level );
+
     max_level = qMax( max_level, level) ;
+    max_level = qMax( max_level, threshold_level );
     if( fabs(max_level-min_level) < 5 ) {
         min_level -= 2.5 ;
         max_level += 2.5 ;
@@ -417,6 +425,7 @@ void MainWindow::SLOT_powerLevel( float level )  {
     //qDebug() << "level=" << level << min_level << max_level ;
 
     levelplot->graph(0)->addData( msg_count/10.0, level);
+    levelplot->graph(1)->addData( msg_count/10.0, threshold_level);
     levelplot->xAxis->setRange( msg_count/10.0,60,Qt::AlignRight );
     levelplot->yAxis->setRange( min_level, max_level);
     levelplot->replot();
@@ -456,6 +465,7 @@ void MainWindow::SLOT_setRxGain(int g) {
 void MainWindow::SLOT_setDetectionThreshold(int level) {
     Controller& ctrl = Controller::getInstance() ;
     ctrl.setDetectionThreshold(level);
+    threshold_level = (float)level;
 }
 
 void MainWindow::SLOT_NewSNRThreshold( float value ) {

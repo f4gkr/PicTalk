@@ -44,7 +44,7 @@
 #include "httpserver/httplistener.h"
 #include "webinterface/webservice.h"
 
-#define SPLASH_NAME ":/logo.png"
+#define SPLASH_NAME ":/logoSmall"
 
 class I : public QThread
 {
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     control.start();
 
     MainWindow *w = new MainWindow();
+    w->connect( ws, SIGNAL(mtuneTo(qint64)), w, SLOT(SLOT_ExternalSetFrequency(qint64)), Qt::QueuedConnection );
     w->setRadio( radio );
     splash.finish(w);
     w->show();

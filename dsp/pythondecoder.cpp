@@ -91,19 +91,31 @@ void ZmqPython::run() {
     void *context = zmq_ctx_new ();
     void *socket = zmq_socket (context, ZMQ_SUB);
     rc = zmq_connect (socket, "tcp://localhost:5564");
-    rc = zmq_setsockopt (socket, ZMQ_SUBSCRIBE, _message, strlen(_message)-1);
-
+    //rc = zmq_setsockopt (socket, ZMQ_SUBSCRIBE, _message, strlen(_message)-1);
+    rc = zmq_setsockopt (socket, ZMQ_SUBSCRIBE, NULL, 0);
     rxbuff = (char *)malloc( BUFFER_SIZE * sizeof(char));
 
     for( ; ; ) {
         memset( rxbuff, 0, BUFFER_SIZE );
         length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
         if( length > 0 ) {
-            if( strcmp( rxbuff, _message) == 0 ) {
+            if( strcmp( rxbuff, (const char *)"MSG") == 0 ) {
                 memset( rxbuff, 0, BUFFER_SIZE );
                 length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
                 if( length > 0 ) {
                     emit message( ">" + QString::fromLocal8Bit( rxbuff) + "\n" ) ;
+                }
+            }
+            if( strcmp( rxbuff, (const char *)"PACKET") == 0 ) {
+                memset( rxbuff, 0, BUFFER_SIZE );
+                length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
+                if( length > 0 ) {
+                    QString frame = "" ;
+                    for( int i=0 ; i < length ; i++ ) {
+                         char c = rxbuff[i] ;
+                         frame += QString::number( (int)c, 16) + " ";
+                    }
+                    emit message( "FRAME>" + frame + "\n" ) ;
                 }
             }
         }

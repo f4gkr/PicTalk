@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>logo.png</file>
+        <file alias="logoSmall">PicTalk 20180124 small.png</file>
     </qresource>
 </RCC>

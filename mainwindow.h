@@ -65,6 +65,8 @@ public slots:
     void  SLOT_hasGpsTime( int year, int month, int day,
                            int hour, int min, int sec, int msec );
 
+    void SLOT_ExternalSetFrequency( qint64 frequency );
+
 private slots:
     void SLOT_userChangesFFTRate(int value);
 
@@ -108,6 +110,7 @@ private:
     IndicatorWidget *levelWidget ;
 #endif
     QCustomPlot *levelplot ;
+    float threshold_level ;
     float min_level ;
     float max_level ;
 };
