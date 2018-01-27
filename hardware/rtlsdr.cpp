@@ -188,6 +188,9 @@ RTLSDR::RTLSDR( int select_index)
     delete tp ;
 
     pthread_create(&receive_thread, NULL, acquisition_thread, this );
+    for( int k=0 ; k < 255 ; k++ ) {
+         LUT[k] = (k-127)/127.0f ;
+    }
 }
 
 char* RTLSDR::getHardwareName() {
@@ -293,10 +296,11 @@ qint64 RTLSDR::getMax_HWRx_CenterFreq()  {
 }
 
 #define ALPHA_DC (0.999)
-#define USE_DC_REMOVAL
+//#define USE_DC_REMOVAL
 int RTLSDR::processData( unsigned char *buf, uint32_t len ) {
       uint32_t lendata ;
       uint32_t i,j ;
+
       TYPEREAL I,Q ;
       TYPECPX tmp ;
       lendata = (len/2) * sizeof( TYPECPX ) ;
@@ -305,10 +309,13 @@ int RTLSDR::processData( unsigned char *buf, uint32_t len ) {
           qDebug() << "MALLOC ???? int RTLSDR::processData " ;
           return(0);
       }
+
       for( i=0 ; i < len/2 ; i++ ) {
           j = 2*i ;
-          I =  ((int)buf[j  ] - 127)/ 127.0f   ;
-          Q =  ((int)buf[j+1] - 127)/ 127.0f   ;
+          //I =  ((int)buf[j  ] - 127)/ 127.0f   ;
+          //Q =  ((int)buf[j+1] - 127)/ 127.0f   ;
+          I = LUT[buf[j]] ;
+          Q = LUT[buf[j+1]];
 #ifdef USE_DC_REMOVAL
           // DC
           // y[n] = x[n] - x[n-1] + alpha * y[n-1]

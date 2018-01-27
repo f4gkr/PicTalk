@@ -83,6 +83,7 @@ private:
 
 
     TYPECPX xn_1, yn_1 ;
+    float LUT[255] ;
 
     uint64_t freq_hz ; // current center freq
     uint32_t sampling_rate ; // current sampling rate
