@@ -14,6 +14,9 @@ public:
 
 signals:
     void message( QString msg );
+    void newFrame( QString frame );
+    void absTune( QString freqTune );
+    void relTune( QString freqTune );
 
 private:
     void run();

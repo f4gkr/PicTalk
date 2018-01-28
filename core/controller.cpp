@@ -64,6 +64,7 @@ Controller::Controller() : QThread(NULL)
     GlobalConfig& gc = GlobalConfig::getInstance() ;
     tp = new TuningPolicy();
     gc.getTuneParameters( gc.cRX_FREQUENCY , tp);
+    rx_tune_request = gc.getReceivedFrequency(tp);
 
     spectrum_interleave = 1 ;
     spectrum_interleave_value = 1 ;

@@ -62,6 +62,8 @@ public:
     float setDetectionThreshold(float level);
     void setSpectrumInterleaveValue( int interleave );
 
+    TuningPolicy *getFrequency() { return( tp ) ; }
+
 signals:
 
     void newSpectrumAvailable(int len, TuningPolicy* tp);

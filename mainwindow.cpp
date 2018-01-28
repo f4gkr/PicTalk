@@ -62,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent)
     tb_layout->setContentsMargins( 1,1,1,1);
 
     mainFDisplay = new CFreqCtrl();
-    mainFDisplay->setMinimumWidth(200);
     mainFDisplay->setMinimumWidth(500);
     tb_layout->addWidget(mainFDisplay);
     top_band->setMaximumHeight(40);
@@ -112,7 +111,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // add wf in tab
     wf = new CPlotter();
-    wf->setMinimumWidth(350);
+    wf->setMinimumWidth(450);
     wf->setSampleRate( 1e6 );
     wf->setCenterFreq( cnf.cRX_FREQUENCY );
     wf->setDemodCenterFreq( cnf.cRX_FREQUENCY );
@@ -124,8 +123,12 @@ MainWindow::MainWindow(QWidget *parent)
     wf->setFftFill(true);
     tabWidget->addTab( wf,tr("Waterfall"));
 
+
     // add decoder ui
     pythonText = new QTextEdit();
+    QFont font = pythonText->font();
+    font.setPointSize(11);
+    pythonText->setFont( font );
     pythonText->setReadOnly(true);
 
     tabWidget->addTab( pythonText, tr("Decoder"));
@@ -297,7 +300,14 @@ void MainWindow::setRadio(RxDevice *device ) {
 
     // configure Python decoder interface
     zmqConsole = new ZmqPython();
+
     connect( zmqConsole, SIGNAL(message(QString)), this, SLOT(PythonMessage(QString)),
+             Qt::QueuedConnection );
+    connect( zmqConsole, SIGNAL(newFrame(QString)), this, SLOT(PythonFrame(QString)),
+             Qt::QueuedConnection );
+    connect( zmqConsole, SIGNAL(absTune(QString)), this, SLOT(PythonAbsTune(QString)),
+             Qt::QueuedConnection );
+    connect( zmqConsole, SIGNAL(relTune(QString)), this, SLOT(PythonRelTune(QString)),
              Qt::QueuedConnection );
 
     dec = new PythonDecoder();
@@ -309,14 +319,50 @@ void MainWindow::PythonMessage( QString msg ) {
     pythonText->moveCursor (QTextCursor::End);
     pythonText->insertPlainText (msg);
     pythonText->moveCursor (QTextCursor::End);
+}
 
-//    QFile file("out.txt");
-//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-//        return;
+void MainWindow::PythonFrame( QString frame ) {
+    QFile file( QApplication::applicationDirPath() + "/PicTalkFrames.txt");
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+        return;
 
-//    QTextStream out(&file);
-//    out << msg ;
-//    file.close();
+    QTextStream out(&file);
+    out << frame << "\n" ;
+    file.close();
+
+    pythonText->moveCursor (QTextCursor::End);
+    pythonText->insertPlainText ( "Frame: {\n" + frame + "\n}\n" );
+    pythonText->moveCursor (QTextCursor::End);
+}
+
+void MainWindow::PythonAbsTune( QString freqabs ) {
+    Controller& ctrl = Controller::getInstance() ;
+    ctrl.setRxCenterFrequency( freqabs.toDouble() );
+}
+
+void MainWindow::PythonRelTune( QString reltune ) {
+
+    Controller& ctrl = Controller::getInstance() ;
+    TuningPolicy *tp = ctrl.getFrequency() ;
+    if( tp == NULL ) {
+        return ;
+    }
+    GlobalConfig& gc = GlobalConfig::getInstance() ;
+    qint64 rxF = gc.getReceivedFrequency( tp ) ;
+
+    rxF += reltune.toInt() ;
+    ctrl.setRxCenterFrequency( rxF );
+    mainFDisplay->blockSignals(true);
+    mainFDisplay->resetToFrequency( rxF );
+
+    qint64 offset = tp->channelizer_offset ;
+    wf->blockSignals(true);
+    wf->setCenterFreq( tp->rx_hardware_frequency +reltune.toInt()  );
+    wf->setDemodCenterFreq( tp->rx_hardware_frequency +reltune.toInt() + offset );
+
+    mainFDisplay->blockSignals(false);
+    wf->blockSignals(false);
+
 }
 
 void MainWindow::SLOT_userTunesFreqWidget(qint64 newFrequency) {

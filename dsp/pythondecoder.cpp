@@ -51,7 +51,7 @@ void PythonDecoder::run() {
     wchar_t array[1024];
 
     if( mPythonScript.length() == 0 ) {
-        mPythonScript = QApplication::applicationDirPath() + "/python/decodeZ2.py" ;
+        mPythonScript = QApplication::applicationDirPath() + "/python/decodeZ3.py" ;
         qDebug() << "using Python :" << mPythonScript ;
     }
 
@@ -83,15 +83,12 @@ void PythonDecoder::run() {
 
 #define BUFFER_SIZE (1024)
 void ZmqPython::run() {
-    char _message[32] ;
     char *rxbuff ;
     int length ;
     int rc ;
-    sprintf( _message, "MSG");
     void *context = zmq_ctx_new ();
     void *socket = zmq_socket (context, ZMQ_SUB);
     rc = zmq_connect (socket, "tcp://localhost:5564");
-    //rc = zmq_setsockopt (socket, ZMQ_SUBSCRIBE, _message, strlen(_message)-1);
     rc = zmq_setsockopt (socket, ZMQ_SUBSCRIBE, NULL, 0);
     rxbuff = (char *)malloc( BUFFER_SIZE * sizeof(char));
 
@@ -106,6 +103,7 @@ void ZmqPython::run() {
                     emit message( ">" + QString::fromLocal8Bit( rxbuff) + "\n" ) ;
                 }
             }
+
             if( strcmp( rxbuff, (const char *)"PACKET") == 0 ) {
                 memset( rxbuff, 0, BUFFER_SIZE );
                 length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
@@ -113,9 +111,30 @@ void ZmqPython::run() {
                     QString frame = "" ;
                     for( int i=0 ; i < length ; i++ ) {
                          char c = rxbuff[i] ;
-                         frame += QString::number( (int)c, 16) + " ";
+                         frame += QString::number( (int)c & 0xFF, 16) + " ";
                     }
-                    emit message( "FRAME>" + frame + "\n" ) ;
+                    emit newFrame(frame) ;
+                }
+            }
+
+            if( strcmp( rxbuff, (const char *)"FREQ") == 0 ) {
+                memset( rxbuff, 0, BUFFER_SIZE );
+                length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
+                if( length > 0 ) {
+                    if( strcmp( rxbuff, (const char *)"ABS") == 0 ) {
+                        memset( rxbuff, 0, BUFFER_SIZE );
+                        length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
+                        if( length > 0 ) {
+                            emit absTune(QString::fromLocal8Bit( rxbuff)) ;
+                        }
+                    }
+                    if( strcmp( rxbuff, (const char *)"REL") == 0 ) {
+                        memset( rxbuff, 0, BUFFER_SIZE );
+                        length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
+                        if( length > 0 ) {
+                            emit relTune( QString::fromLocal8Bit(rxbuff) ) ;
+                        }
+                    }
                 }
             }
         }

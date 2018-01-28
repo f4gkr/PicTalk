@@ -37,10 +37,11 @@ GlobalConfig::GlobalConfig() {
 
     settings.beginGroup("Radio");
     if( !settings.contains("RX_FREQUENCY")) {
-        settings.setValue("RX_FREQUENCY", (double)(DEFAULT_RX_FREQUENCY/1e6) );
+        settings.setValue("RX_FREQUENCY", (double)(DEFAULT_RX_FREQUENCY ) );
+        cRX_FREQUENCY = (qint64)DEFAULT_RX_FREQUENCY ;
     } else {
         // value stored in MHz
-        cRX_FREQUENCY = (qint64)(settings.value( "RX_FREQUENCY", (double)DEFAULT_RX_FREQUENCY ).toDouble() * 1e6 );
+        cRX_FREQUENCY = (qint64)(settings.value( "RX_FREQUENCY", (double)DEFAULT_RX_FREQUENCY ).toDouble() );
         if( (cRX_FREQUENCY < 0) || (cRX_FREQUENCY>10e9) ) {
             cRX_FREQUENCY = (qint64)DEFAULT_RX_FREQUENCY ;
         }

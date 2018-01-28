@@ -56,7 +56,7 @@ win32 {
 
 linux {
     LIBS += -lgps -lhidapi-hidraw -L/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu -L/usr/lib -lpython3.6m -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
-    QMAKE_CFLAGS += -fdebug-prefix-map=/build/python3.6-fWqO4P/python3.6-3.6.1=. -fstack-protector-strong
+    QMAKE_CXXFLAGS += -fdebug-prefix-map=/build/python3.6-fWqO4P/python3.6-3.6.1=. -fstack-protector-strong
     INCLUDEPATH += /usr/include/python3.6m
     DESTDIR = $$PWD/bin
     contains( QMAKE_HOST.arch, arm.* ):{
@@ -67,6 +67,10 @@ linux {
 
     }    
 }
+#https://stackoverflow.com/questions/42620074/gprof-produces-empty-output
+#    QMAKE_CXXFLAGS += -pg -no-pie
+#    QMAKE_CFLAGS += -pg -no-pie
+#    QMAKE_LFLAGS += -pg -no-pie
 
 SOURCES += \
     main.cpp\
@@ -181,4 +185,7 @@ RESOURCES += \
 
 OTHER_FILES += \
     bin/python/decodeZ2.py
+
+DISTFILES += \
+    bin/python/decodeZ3.py
 

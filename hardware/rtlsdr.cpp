@@ -198,6 +198,7 @@ char* RTLSDR::getHardwareName() {
 }
 
 int RTLSDR::setRxCenterFreq( TuningPolicy* freq_hz ) {
+    //printf("%s freq=%f\n", __func__, ((double)freq_hz->rx_hardware_frequency)/1e6 ) ;
     int rc = rtlsdr_set_center_freq( rtlsdr_device, freq_hz->rx_hardware_frequency  );
     if( !rc ) {
         this->freq_hz = freq_hz->rx_hardware_frequency ;

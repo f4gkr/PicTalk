@@ -85,6 +85,9 @@ private slots:
     void endProgram();
 
     void PythonMessage( QString msg );
+    void PythonFrame( QString frame );
+    void PythonAbsTune( QString freqabs );
+    void PythonRelTune( QString reltune );
 
 private:
     int received_frame ;
