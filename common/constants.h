@@ -78,7 +78,8 @@
 #define MINFRAME_LENGTH (OVERSAMPLE_RATIO*1024)
 #define RX_OFFSET (1e3) /* how far away from rx center we shift to avoid DC component */
 
-#define CONFIG_FILENAME "picsatrfe.conf"
+#define CONFIG_FILENAME "pictalk.conf"
+#define FRAMEFILE "pictalkframes.txt"
 #define DEFAULT_RX_FREQUENCY (435.525*1e6)
 
 #define FFTRATE_MAX (10)

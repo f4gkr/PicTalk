@@ -61,15 +61,15 @@ void PythonDecoder::run() {
     pythonProgramName.toWCharArray(array);
     Py_SetProgramName(array);
     Py_Initialize();
+    PySys_SetArgvEx(0,NULL,0);
 
-//    PyRun_SimpleString("from time import time,ctime\n"
-//                         "print('Today is',ctime(time()) )\n");
     PyObject *obj = Py_BuildValue("s", (const char *)tochar.data() );
     FILE *file = _Py_fopen_obj(obj, "r+");
     if( file != NULL ) {
         qDebug() << "starting python" ;
 
         emit pythonStarts();
+        PyRun_SimpleString("import sys; sys.path.pop(0)\n");
         PyRun_SimpleFile(file, (const char *)tochar.data() );
         emit pythonEnds();
 
@@ -111,7 +111,11 @@ void ZmqPython::run() {
                     QString frame = "" ;
                     for( int i=0 ; i < length ; i++ ) {
                          char c = rxbuff[i] ;
-                         frame += QString::number( (int)c & 0xFF, 16) + " ";
+                         if( ((int)c & 0xFF) < 10 ) {
+                            frame += "0" + QString::number( (int)c & 0xFF, 16) + " ";
+                         } else {
+                            frame += QString::number( (int)c & 0xFF, 16) + " ";
+                         }
                     }
                     emit newFrame(frame) ;
                 }

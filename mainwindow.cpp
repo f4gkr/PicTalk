@@ -322,7 +322,7 @@ void MainWindow::PythonMessage( QString msg ) {
 }
 
 void MainWindow::PythonFrame( QString frame ) {
-    QFile file( QApplication::applicationDirPath() + "/PicTalkFrames.txt");
+    QFile file( QApplication::applicationDirPath() + "/" + QString(FRAMEFILE));
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return;
 
@@ -338,6 +338,17 @@ void MainWindow::PythonFrame( QString frame ) {
 void MainWindow::PythonAbsTune( QString freqabs ) {
     Controller& ctrl = Controller::getInstance() ;
     ctrl.setRxCenterFrequency( freqabs.toDouble() );
+
+    mainFDisplay->blockSignals(true);
+    mainFDisplay->resetToFrequency( freqabs.toDouble() );
+
+    wf->blockSignals(true);
+    wf->setCenterFreq( freqabs.toDouble() );
+    wf->setDemodCenterFreq( freqabs.toDouble() );
+
+    mainFDisplay->blockSignals(false);
+    wf->blockSignals(false);
+
 }
 
 void MainWindow::PythonRelTune( QString reltune ) {
@@ -387,6 +398,15 @@ void MainWindow::SLOT_startPressed() {
 
     if( ctrl.isAcquiring()  )
         return ;
+
+    // Add section in file
+   QFile file( QApplication::applicationDirPath() + "/" + QString(FRAMEFILE));
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    out << "\n-Rx starts--------------\n\n" ;
+    file.close();
 
     received_frame = msg_count = 0 ;
     levelplot->graph(0)->clearData();

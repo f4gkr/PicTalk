@@ -55,6 +55,7 @@ def send_init_packet():
 def resetFreq(socket2,decode):
     time.sleep(5)
     freq=int(435.525*1e6)
+    printzmq("Sending Picsat RX frequency")
     changeFreqzmq("ABS",str(freq))
     while True:
         time.sleep(2000)
