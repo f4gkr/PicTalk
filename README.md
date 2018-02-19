@@ -40,7 +40,8 @@ the project file pictalk.pro is set to support python3.6. If you want to use a s
 - QMAKE_CFLAGS += $$system("python3.6-config --cflags")
 - INCLUDEPATH += $$system("python3.6-config --includes |cut -c 3-")
 
-- run
-  .pictalk
+### Run
+By default the binary is stored in ./bin folder and requires the ./python folder to be present
+Binary name : ./bin/pictalk
 
 For more information, please visit https://picsat.obspm.fr/
