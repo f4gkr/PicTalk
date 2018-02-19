@@ -306,9 +306,13 @@ void MainWindow::setRadio(RxDevice *device ) {
     connect( zmqConsole, SIGNAL(relTune(QString)), this, SLOT(PythonRelTune(QString)),
              Qt::QueuedConnection );
 
+    zmqConsole->start();
+    while( !zmqConsole->isRunning() ) {
+        QThread::msleep(10);
+    }
     dec = new PythonDecoder();
     dec->start(); // start the decoder
-    zmqConsole->start();
+
 }
 
 void MainWindow::PythonMessage( QString msg ) {

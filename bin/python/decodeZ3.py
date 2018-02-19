@@ -399,10 +399,7 @@ def changeFreqzmq(relAbs,Hertz):
     socket2.send_string(Hertz)
            
     
-    
-msg="Decode"
-print("\x1B]0;%s\x07" % msg)
-    
+
 context = zmq.Context()
 
 # starting publisher for data packets
@@ -419,7 +416,7 @@ socket.connect("tcp://localhost:5563")
 
 socket.setsockopt_string(zmq.SUBSCRIBE,"IQ")
 
-printzmq("Connected to PicTalk.")
+
     
 # configuring decode function
 decode=Decode()    
@@ -437,4 +434,5 @@ resetThread.start()
 
 
 # check with dummy packet    
-send_init_packet()
+#send_init_packet()
+printzmq("Connected to PicTalk.")

@@ -176,8 +176,7 @@ HEADERS  += \
 RESOURCES += \
     resources/picsat.qrc
 
-OTHER_FILES += \
-    bin/python/decodeZ2.py
+OTHER_FILES +=
 
 DISTFILES += \
     bin/python/decodeZ3.py

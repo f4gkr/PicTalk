@@ -89,11 +89,12 @@ void PythonDecoder::run() {
 void ZmqPython::run() {
     char *rxbuff ;
     int length ;
-    int rc ;
+
     void *context = zmq_ctx_new ();
     void *socket = zmq_socket (context, ZMQ_SUB);
-    rc = zmq_connect (socket, "tcp://localhost:5564");
-    rc = zmq_setsockopt (socket, ZMQ_SUBSCRIBE, NULL, 0);
+
+    zmq_connect (socket, "tcp://localhost:5564");
+    zmq_setsockopt (socket, ZMQ_SUBSCRIBE, NULL, 0);
     rxbuff = (char *)malloc( BUFFER_SIZE * sizeof(char));
 
     for( ; ; ) {
@@ -113,9 +114,11 @@ void ZmqPython::run() {
                 length = zmq_recv( socket, (void *)rxbuff, BUFFER_SIZE, 0);
                 if( length > 0 ) {
                     QString frame = "" ;
-                    for( int i=0 ; i < length ; i++ ) {
+                    // Picsat server does not accept the two CRC bytes at the end
+                    // They are not processed here
+                    for( int i=0 ; i < length - 2; i++ ) {
                          char c = rxbuff[i] ;
-                         if( ((int)c & 0xFF) < 10 ) {
+                         if( ((int)c & 0xFF) <= 16 ) {
                             frame += "0" + QString::number( (int)c & 0xFF, 16) + " ";
                          } else {
                             frame += QString::number( (int)c & 0xFF, 16) + " ";
