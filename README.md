@@ -28,12 +28,17 @@ To compile this program you need to check that you have the correct Python insta
 - libhidapi-dev
 
 Clone the repository, then from the folder :
-- edit the pictalk.pro to set the relevant Python version
 
 - generate makefile : 
    qmake
 - compile
    make
+
+the project file pictalk.pro is set to support python3.6. If you want to use a specific version, you have to update the following lines in the project file :
+
+LIBS += $$system("python3.6-config --libs")
+QMAKE_CFLAGS += $$system("python3.6-config --cflags")
+INCLUDEPATH += $$system("python3.6-config --includes |cut -c 3-")
 
 - run
   .pictalk
