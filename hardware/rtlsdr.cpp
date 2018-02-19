@@ -297,7 +297,7 @@ qint64 RTLSDR::getMax_HWRx_CenterFreq()  {
 }
 
 #define ALPHA_DC (0.999)
-//#define USE_DC_REMOVAL
+#define USE_DC_REMOVAL
 int RTLSDR::processData( unsigned char *buf, uint32_t len ) {
       uint32_t lendata ;
       uint32_t i,j ;

@@ -19,6 +19,8 @@
  * along with Gqrx; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
+ *
+ * Changes: F4GKR : added distance to bookmarks to have filter - used in gkSDR to display or not on the map
  */
 #include <Qt>
 #include <QFile>

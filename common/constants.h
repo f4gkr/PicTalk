@@ -98,11 +98,15 @@ public:
 
     QString cFIFO_FileName ;
     qint64 cRX_FREQUENCY ;
+    QString CALLSIGN ;
+    QString LOCATOR ;
 
     void getTuneParameters( qint64 frequencyOfInterest, TuningPolicy* tp ) ;
     qint64 getReceivedFrequency( TuningPolicy* tp );
 
+
 private:
+
     GlobalConfig();
 
     GlobalConfig(const GlobalConfig &); // hide copy constructor

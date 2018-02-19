@@ -34,6 +34,9 @@
 #include <QLabel>
 #include <QPalette>
 #include <QMessageBox>
+#include <QDateTime>
+#include <QDate>
+#include <QTime>
 #include <stdint.h>
 
 #include "core/controller.h"
@@ -118,11 +121,10 @@ MainWindow::MainWindow(QWidget *parent)
     wf->setSpanFreq( DEMODULATOR_SAMPLERATE*4 );
 
     wf->setHiLowCutFrequencies( -DEMODULATOR_SAMPLERATE/2,DEMODULATOR_SAMPLERATE/2);
-    wf->setMaxDB(-50.0);
-    wf->setMinDB(-130);
+    wf->setMaxDB(-60.0);
+    wf->setMinDB(-100);
     wf->setFftFill(true);
     tabWidget->addTab( wf,tr("Waterfall"));
-
 
     // add decoder ui
     pythonText = new QTextEdit();
@@ -250,15 +252,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect( wf, SIGNAL(newDemodFreq(qint64, qint64)), this, SLOT(SLOT_NewDemodFreq(qint64, qint64)));
 
-
-    GPSD& gpsd= GPSD::getInstance() ;
-    connect( &gpsd, SIGNAL(hasError(int)), this, SLOT(SLOT_gpsdAsError(int)), Qt::QueuedConnection );
-    gpsd.start();
-
-    connect( &gpsd, SIGNAL(hasGpsFix(double,double)), this,
-             SLOT(SLOT_hasGpsFix(double,double)), Qt::QueuedConnection );
-    connect( &gpsd, SIGNAL(hasGpsTime(int,int,int,int,int,int,int)), this,
-             SLOT(SLOT_hasGpsTime(int,int,int,int,int,int,int)),Qt::QueuedConnection);
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(SLOT_timer()));
+    timer->start( 500.0 );
 
     dec = NULL ;
 
@@ -466,9 +462,6 @@ MainWindow::~MainWindow()
 {
     SLOT_stopPressed();
 
-    GPSD& gpsd= GPSD::getInstance() ;
-    gpsd.shutdown();
-
     Controller& ctrl = Controller::getInstance() ;
     ctrl.close();
 
@@ -499,24 +492,32 @@ void MainWindow::SLOT_powerLevel( float level )  {
 }
 
 
-// called by GPSD when we have a fix - not used
-void MainWindow::SLOT_hasGpsFix(double latitude, double longitude ) {
-    Q_UNUSED(latitude);
-    Q_UNUSED(longitude);
+void MainWindow::SLOT_timer() {
+    static int last_sec = 0;
+    int utc_hour, utc_min, utc_sec  ;
+//    int utc_day, utc_month, utc_year ;
+
+    QTime now = QDateTime::currentDateTimeUtc().time() ;
+    utc_hour = now.hour();
+    utc_min = now.minute();
+    utc_sec = now.second();
+
+//    QDate today = QDate::currentDate();
+//    utc_day = today.day();
+//    utc_month = today.month();
+//    utc_year  = today.year();
+
+    if( utc_sec != last_sec ) {
+        last_sec = utc_sec ;
+        QString zuluTime = QString("%1").arg(utc_hour, 2, 10, QChar('0')) + ":" +
+                QString("%1").arg(utc_min, 2, 10, QChar('0')) + ":" +
+                QString("%1").arg(utc_sec, 2, 10, QChar('0'))  ;
+
+
+        zuluDisplay->display( zuluTime );
+    }
 }
 
-void MainWindow::SLOT_hasGpsTime(int year, int month, int day, int hour, int min, int sec, int msec) {
-    Q_UNUSED(year);
-    Q_UNUSED(month);
-    Q_UNUSED(day);
-    Q_UNUSED(msec);
-    QString zuluTime = QString("%1").arg(hour, 2, 10, QChar('0')) + ":" +
-            QString("%1").arg(min, 2, 10, QChar('0')) + ":" +
-            QString("%1").arg(sec, 2, 10, QChar('0')) + "." + QString::number(msec);
-
-
-    zuluDisplay->display( zuluTime );
-}
 
 void MainWindow::SLOT_setRxGain(int g) {
     if( radio == NULL )
@@ -542,16 +543,11 @@ void MainWindow::SLOT_NewSNRThreshold( float value ) {
 #endif
 }
 
-void MainWindow::SLOT_gpsdAsError( int code ) {
-    GPSD& gpsd= GPSD::getInstance() ;
-    gpsd.processError(code);
-}
+
 
 
 void MainWindow::endProgram() {
     radio->stopAcquisition() ;
-    GPSD& gpsd= GPSD::getInstance() ;
-    gpsd.shutdown();
     Controller& ctrl = Controller::getInstance() ;
     ctrl.close();
     exit(0);

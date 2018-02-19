@@ -29,7 +29,6 @@ TARGET = pictalk
 TEMPLATE = app
 
 QT       += core gui multimedia
-
 DEFINES += BUILD_DATE='"\\\"$(shell  date +\"%Y%m%d\")\\\""'
 
 include( httpserver/httpserver.pri)
@@ -46,16 +45,16 @@ win32 {
 
     # for python embed, see https://docs.python.org/3/extending/embedding.html
     # paragraph 1.6. Compiling and Linking under Unix-like systems
-    #INCLUDEPATH += C:/Python36/include
-    #QMAKE_LFLAGS += -LC:/Python36/libs
+    INCLUDEPATH += C:/msys64/mingw64/include/python3.6m
+    QMAKE_LFLAGS += -LC:/msys64/mingw64/lib
     #QMAKE_CFLAGS += -fwrapv -D__USE_MINGW_ANSI_STDIO=1  -DNDEBUG  -DNDEBUG
-    #LIBS += -lpython36  -lversion -lm
+    LIBS += -lpython3.6m  -lversion -lm
     #DEFINES += D_hypot=hypot
     DESTDIR = /msys64/home/sylvain/code/pictalk_bindist
 }
 
 linux {
-    LIBS += -lgps -lhidapi-hidraw -L/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu -L/usr/lib -lpython3.6m -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
+    LIBS += -lhidapi-hidraw -L/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu -L/usr/lib -lpython3.6m -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
     QMAKE_CXXFLAGS += -fdebug-prefix-map=/build/python3.6-fWqO4P/python3.6-3.6.1=. -fstack-protector-strong
     INCLUDEPATH += /usr/include/python3.6m
     DESTDIR = $$PWD/bin
@@ -97,10 +96,7 @@ SOURCES += \
     hardware/rxhardwareselector.cpp \
     hardware/rxdevice.cpp \
     hardware/rtlsdr.cpp \
-    hardware/miricscpp.cpp \
-    hardware/gpdsd.cpp \
-    hardware/windows/tinygps.cpp \
-    hardware/windows/rs232.c \
+    hardware/miricscpp.cpp \ 
     hardware/rtlsdr/tuner_r82xx.c \
     hardware/rtlsdr/tuner_fc2580.c \
     hardware/rtlsdr/tuner_fc0013.c \
@@ -154,9 +150,6 @@ HEADERS  += \
     hardware/rxdevice.h \
     hardware/rtlsdr.h \
     hardware/miricscpp.h \
-    hardware/gpdsd.h \
-    hardware/windows/tinygps.h \
-    hardware/windows/rs232.h \
     hardware/rtlsdr/tuner_r82xx.h \
     hardware/rtlsdr/tuner_fc2580.h \
     hardware/rtlsdr/tuner_fc0013.h \

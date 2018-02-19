@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <QDebug>
 #include <QApplication>
-#define DEBUG_ZMQ_SRV (1)
+#define DEBUG_ZMQ_SRV (0)
 
 ZmqServer::ZmqServer(QObject *parent) : QThread(parent)
 {
@@ -62,7 +62,7 @@ void ZmqServer::run() {
 
     message[0] = 'I' ;
     message[1] = 'Q' ;
-    message[3] = 0 ;
+    message[2] = 0 ;
 
     while( !m_end_request ) {
         synchro->acquire(1);

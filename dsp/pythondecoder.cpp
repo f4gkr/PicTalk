@@ -39,7 +39,6 @@ ZmqPython::ZmqPython(QObject *parent) : QThread(parent)
 {
 }
 
-
 PythonDecoder::PythonDecoder(QObject *parent) : QThread(parent)
 {
     mPythonScript = "" ;
@@ -60,6 +59,11 @@ void PythonDecoder::run() {
 
     pythonProgramName.toWCharArray(array);
     Py_SetProgramName(array);
+#ifdef _WIN32
+    wchar_t array2[1024];
+    QString("python3.6").toWCharArray(array2) ;
+    Py_SetPath(array2);
+#endif
     Py_Initialize();
     PySys_SetArgvEx(0,NULL,0);
 

@@ -31,6 +31,7 @@
 #include <QApplication>
 #include <QSettings>
 
+#define DEBUG_GC (0)
 
 GlobalConfig::GlobalConfig() {
     QSettings settings( QApplication::applicationDirPath() + "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
@@ -55,12 +56,16 @@ void GlobalConfig::getTuneParameters(qint64 frequencyOfInterest , TuningPolicy *
     tp->channelizer_offset = FRAME_OFFSET_LOW + DEMODULATOR_SAMPLERATE/2 ;
     tp->rx_hardware_frequency = frequencyOfInterest - tp->channelizer_offset ;
 
-    qDebug() << "--------------------------------------" ;
-    qDebug() << "getTuneParameters() f0=" << frequencyOfInterest/1e6 << " MHz" ;
-    qDebug() << "TuningPolicy.channelizer_offset=" << tp->channelizer_offset << " Hz." ;
-    qDebug() << "TuningPolicy.rx_hardware_frequency=" << tp->rx_hardware_frequency/1e6 << " MHz." ;
+    if( DEBUG_GC ) {
+        qDebug() << "--------------------------------------" ;
+        qDebug() << "getTuneParameters() f0=" << frequencyOfInterest/1e6 << " MHz" ;
+        qDebug() << "TuningPolicy.channelizer_offset=" << tp->channelizer_offset << " Hz." ;
+        qDebug() << "TuningPolicy.rx_hardware_frequency=" << tp->rx_hardware_frequency/1e6 << " MHz." ;
+    }
+
 }
 
 qint64 GlobalConfig::getReceivedFrequency( TuningPolicy *tp ) {
     return( tp->rx_hardware_frequency + (qint64)tp->channelizer_offset ) ;
 }
+

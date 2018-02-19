@@ -36,7 +36,14 @@
 #define FRAME_DEBUG (1)
 #define FFT_SIZE (1024)
 
-
+/* two different ways to estimate if we receive of not a sat frame :
+ * - energy based : we compute the RMS power using a sliding window and if > threshold we assume a frame starts
+ * - autocorrelation based : we compute the autocorrelation of the received signal and compute ratio at 0 and rest
+ *    when pure noise (random) the ratio is very high
+ *    when we receive modulated data, the autocorrelation increases at the symbol rate
+ *
+ *   autocorrelation has shown the best results
+ */
 FrameProcessor::FrameProcessor(QObject *parent) : QObject(parent)
 {
     m_bandwidth = 0 ;
@@ -140,7 +147,7 @@ void FrameProcessor::ac(tSComplex *start, int L) {
     fftwf_execute(plan_rev);
 }
 
-#define SUBSAMPLERATE (3)
+#define SUBSAMPLERATE (5)
 #define CX1 (.8)
 #define DEBUG_ADETECTOR (0)
 int FrameProcessor::processDataAD( TYPECPX* IQsamples, int L , int sampleRate ) {
@@ -175,7 +182,8 @@ int FrameProcessor::processDataAD( TYPECPX* IQsamples, int L , int sampleRate ) 
 
         case sMeasureNoise:
             next_state = sSearchFrame ;
-
+            // we continue to searchFrame state
+            // no break here !
         case sSearchFrame:
             if( remaining_samples >= PREAMBLE_LENGTH ) {
                 ac(start, PREAMBLE_LENGTH );
@@ -215,6 +223,7 @@ int FrameProcessor::processDataAD( TYPECPX* IQsamples, int L , int sampleRate ) 
                     start += PREAMBLE_LENGTH/2 - 1 ;
                     remaining_samples -= PREAMBLE_LENGTH/2 - 1 ;                    
                 }
+                // we smooth (low pass) the data to slow down display
 
                 level4display = level4display * .6 + v * .4 ;
                 subsample-- ;

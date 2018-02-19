@@ -35,6 +35,7 @@
 #include <QHBoxLayout>
 #include <QTabWidget>
 #include <QTextEdit>
+#include <QTimer>
 #include "common/tuningpolicy.h"
 #include "ui/plotter.h"
 #include "hardware/rxdevice.h"
@@ -60,11 +61,7 @@ public:
 
 public slots:
     void SLOT_powerLevel( float level ) ;
-
-    void  SLOT_hasGpsFix(double latitude, double longitude );
-    void  SLOT_hasGpsTime( int year, int month, int day,
-                           int hour, int min, int sec, int msec );
-
+    void SLOT_timer();
     void SLOT_ExternalSetFrequency( qint64 frequency );
 
 private slots:
@@ -80,8 +77,6 @@ private slots:
     void SLOT_setRxGain(int) ;
     void SLOT_setDetectionThreshold(int);
     void SLOT_NewSNRThreshold( float value );
-
-    void SLOT_gpsdAsError( int code );
     void endProgram();
 
     void PythonMessage( QString msg );
@@ -100,6 +95,7 @@ private:
     QVBoxLayout *crlayout  ;
     gkDial *detection_threshold ;
     QLCDNumber *zuluDisplay ;
+    QTimer *timer ;
 
     LedIndicator* decoding ;
     QLineEdit* decoderStatus ;

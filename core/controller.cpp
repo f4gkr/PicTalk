@@ -56,10 +56,6 @@ Controller::Controller() : QThread(NULL)
     connect( processor, SIGNAL(newSNRThreshold(float)), this, SLOT(SLOT_FPSetsNewThreshold(float)));
 
     sempos = new QSemaphore(1);
-    m_Latitude = m_Longitude = m_Altitude = 0 ;
-    GPSD& gpsd= GPSD::getInstance() ;
-    connect( &gpsd, SIGNAL(hasGpsFix(double,double)), this, SLOT(SLOT_hasGpsFix(double,double)), Qt::QueuedConnection );
-    connect( &gpsd, SIGNAL(hasGpsTime(int,int,int,int,int,int,int)), this, SLOT(SLOT_hasGpsTime(int,int,int,int,int,int,int)),Qt::QueuedConnection);
 
     GlobalConfig& gc = GlobalConfig::getInstance() ;
     tp = new TuningPolicy();
