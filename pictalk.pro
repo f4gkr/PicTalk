@@ -47,16 +47,14 @@ win32 {
     # paragraph 1.6. Compiling and Linking under Unix-like systems
     INCLUDEPATH += C:/msys64/mingw64/include/python3.6m
     QMAKE_LFLAGS += -LC:/msys64/mingw64/lib
-    #QMAKE_CFLAGS += -fwrapv -D__USE_MINGW_ANSI_STDIO=1  -DNDEBUG  -DNDEBUG
     LIBS += -lpython3.6m  -lversion -lm
-    #DEFINES += D_hypot=hypot
     DESTDIR = /msys64/home/sylvain/code/pictalk_bindist
 }
 
 linux {
-    LIBS += -lhidapi-hidraw -L/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu -L/usr/lib -lpython3.6m -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
-    QMAKE_CXXFLAGS += -fdebug-prefix-map=/build/python3.6-fWqO4P/python3.6-3.6.1=. -fstack-protector-strong
-    INCLUDEPATH += /usr/include/python3.6m
+    LIBS += $$system("python3.6-config --libs")
+    QMAKE_CFLAGS += $$system("python3.6-config --cflags")
+    INCLUDEPATH += $$system("python3.6-config --includes |cut -c 3-")
     DESTDIR = $$PWD/bin
     contains( QMAKE_HOST.arch, arm.* ):{
         #specific instructions for RPiCompile
@@ -64,7 +62,8 @@ linux {
     } else {
         # generic Linux compile...
 
-    }    
+    }
+    LIBS += -lhidapi-hidraw
 }
 #https://stackoverflow.com/questions/42620074/gprof-produces-empty-output
 #    QMAKE_CXXFLAGS += -pg -no-pie

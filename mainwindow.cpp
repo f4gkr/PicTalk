@@ -44,8 +44,6 @@
 #include "common/QLogger.h"
 #include "common/constants.h"
 
-
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
