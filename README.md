@@ -18,14 +18,14 @@ This application is split in two parts:
 
 To compile this program you need to check that you have the correct Python installed, and in particular the following packages:
 ### Required Qt Modules :
-qt5-default
-libqt5svg5-dev
+- qt5-default
+- libqt5svg5-dev
 
 ### Required librairies :
 - libusb-1.0-0-dev 
-- libgps-dev (connects to gpsd to retrieve time, otherwise on fail uses system time)
 - libfftw3-dev
 - libczmq-dev
+- libhidapi-dev
 
 ### clone the repository, then from the folder :
 - edit the pictalk.pro to set the relevant Python version
