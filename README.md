@@ -27,7 +27,7 @@ To compile this program you need to check that you have the correct Python insta
 - libczmq-dev
 - libhidapi-dev
 
-### clone the repository, then from the folder :
+Clone the repository, then from the folder :
 - edit the pictalk.pro to set the relevant Python version
 
 - generate makefile : 
