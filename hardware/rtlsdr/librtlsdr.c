@@ -27,6 +27,8 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
+#define DETACH_KERNEL_DRIVER
+
 #include <libusb-1.0/libusb.h>
 
 /*

@@ -10,6 +10,10 @@ This sotware requires Python 3.5/3.6 to be installed with the following Python P
 - Numpy
 - ZMQ
 
+Depending on selected python version you want to use, you have to add to your system :
+- python3.6-dev or python3.5-dev
+- libpython3.6-dev or libpython3.5-dev
+
 This application is split in two parts:
 - The core Qt C++ program manages the SDR device and extracts the sub-band of interest,
 - It scans the RF channel to estimate potential transmission from satellite
@@ -20,6 +24,7 @@ To compile this program you need to check that you have the correct Python insta
 ### Required Qt Modules :
 - qt5-default
 - libqt5svg5-dev
+- qtmultimedia5-dev
 
 ### Required librairies :
 - libusb-1.0-0-dev 
@@ -29,6 +34,10 @@ To compile this program you need to check that you have the correct Python insta
 
 Clone the repository, then from the folder :
 
+git clone https://github.com/f4gkr/PicTalk.git
+Cloning into 'PicTalk'...
+
+- Then cd PicTalk
 - generate makefile : 
    qmake
 - compile
@@ -42,7 +51,7 @@ the project file pictalk.pro is set to support python3.6. If you want to use a s
 
 
 # Run application:
-By default the binary is stored in ./bin folder and requires the ./python folder to be present.
+By default the binary is stored in ./bin folder and requires the ./python folder to be present (the python folder contains the frame decoder)
 
 Binary name : ./bin/pictalk
 

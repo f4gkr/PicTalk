@@ -35,7 +35,7 @@ include( httpserver/httpserver.pri)
 include( qwt/qwt.pri )
 
 LIBS +=  -lusb-1.0 -lpthread -lfftw3f -lm -lzmq
-
+QMAKE_CXXFLAGS += -std=c++11
 
 
 win32 {
@@ -178,5 +178,6 @@ RESOURCES += \
 OTHER_FILES +=
 
 DISTFILES += \
-    bin/python/decodeZ3.py
+    bin/python/decodeZ3.py \
+    PackagingNotes.txt
 
