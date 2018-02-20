@@ -25,6 +25,7 @@ To compile this program you need to check that you have the correct Python insta
 - qt5-default
 - libqt5svg5-dev
 - qtmultimedia5-dev
+-  libqt5opengl5-dev
 
 ### Required librairies :
 - libusb-1.0-0-dev 
