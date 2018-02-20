@@ -320,7 +320,11 @@ void MainWindow::PythonMessage( QString msg ) {
 }
 
 void MainWindow::PythonFrame( QString frame ) {
-    QFile file( QApplication::applicationDirPath() + "/" + QString(FRAMEFILE));
+    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk").exists() ) {
+        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk") ;
+    }
+
+    QFile file(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + QString(FRAMEFILE));
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return;
 

@@ -27,14 +27,20 @@
 //or implied, of Sylvain AZARIAN F4GKR.
 //==========================================================================================
 #include "constants.h"
+#include <QStandardPaths>
 #include <QDebug>
 #include <QApplication>
 #include <QSettings>
-
+#include <QFile>
+#include <QDir>
 #define DEBUG_GC (0)
 
 GlobalConfig::GlobalConfig() {
-    QSettings settings( QApplication::applicationDirPath() + "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+
+    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk").exists() ) {
+        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk") ;
+    }
+    QSettings settings(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
 
     settings.beginGroup("Radio");
     if( !settings.contains("RX_FREQUENCY")) {
