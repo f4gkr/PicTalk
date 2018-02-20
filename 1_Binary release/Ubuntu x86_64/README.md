@@ -27,6 +27,12 @@ Depends: libc6 , libusb-1.0-0, libfftw3-3, qt5-default (>= 5.5), libzmq3-dev, li
 
 
 
+# Running
+The program is installed in /opt/pictalk and is called pictalk.
+To run it :
+- /opt/pictalk/pictalk
+- the decoded frames and preferences are stored in the ~/pictalk folder
+
 Removing:
 - sudo dpkg -r pictalk
 
