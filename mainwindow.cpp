@@ -40,7 +40,6 @@
 #include <stdint.h>
 
 #include "core/controller.h"
-#include "hardware/gpdsd.h"
 #include "common/QLogger.h"
 #include "common/constants.h"
 

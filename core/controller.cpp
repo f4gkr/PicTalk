@@ -28,7 +28,6 @@
 //==========================================================================================
 #include "controller.h"
 #include "common/samplefifo.h"
-#include "hardware/gpdsd.h"
 #include "common/constants.h"
 #include <QApplication>
 
@@ -373,20 +372,3 @@ void Controller::SLOT_powerLevelChanged( float level )  {
     emit powerLevel(level);
 }
 
-
-void Controller::SLOT_hasGpsFix(double latitude, double longitude) {
-    sempos->acquire(1);
-    m_Latitude = latitude ;
-    m_Longitude = longitude ;
-    sempos->release(1);
-}
-
-void Controller::SLOT_hasGpsTime(int year, int month, int day, int hour, int min, int sec, int msec) {
-    this->year = year ;
-    this->month = month ;
-    this->day = day ;
-    this->hour = hour ;
-    this->min = min ;
-    this->sec = sec ;
-    this->msec = msec ;
-}

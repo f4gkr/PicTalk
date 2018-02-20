@@ -31,14 +31,13 @@
 #include <QStyleFactory>
 #include <QSplashScreen>
 #include <QMessageBox>
+#include <QStandardPaths>
 
 #include "common/constants.h"
-
 #include "mainwindow.h"
 #include "core/controller.h"
 
 #include "hardware/rxhardwareselector.h"
-#include "hardware/gpdsd.h"
 #include "common/QLogger.h"
 
 #include "httpserver/httplistener.h"
@@ -56,6 +55,7 @@ public:
         }
     }
 };
+
 
 int main(int argc, char *argv[])
 {
@@ -97,7 +97,11 @@ int main(int argc, char *argv[])
         return(-1);
     }
     // start web server
-    QSettings settings( QApplication::applicationDirPath() + "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk").exists() ) {
+        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk") ;
+    }
+
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
     settings.beginGroup("WebServer");
     WebService *ws = new WebService(&a);
     HttpListener* webserver = new HttpListener( &settings, ws, &a);

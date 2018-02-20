@@ -23,7 +23,7 @@
  ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  ***************************************************************************************/
 #include <cstdarg>
-
+#include <QStandardPaths>
 namespace QLogger
 {
     void QLog_Trace(const QString &module, const QString &message)
@@ -157,9 +157,9 @@ namespace QLogger
 
         int MAX_SIZE = 1024 * 1024;
 
-        QDir dir(QDir::currentPath());
-        if (!dir.exists("logs"))
-            dir.mkdir("logs");
+        QDir dir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) );
+        if (!dir.exists("pictalk") )
+            dir.mkdir("pictalk");
 
         QFile file(_fileName);
         QString toRemove = _fileName.section('.',-1);
@@ -176,7 +176,7 @@ namespace QLogger
             renamed = file.rename(_fileName, newName);
 
         }
-
+        _fileName = QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + _fileName ;
         file.setFileName(_fileName);
         if (file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append))
         {

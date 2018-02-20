@@ -1,0 +1,35 @@
+see :
+https://www.debian.org/doc/manuals/maint-guide/dreq.fr.html
+
+objdump -p ./pictalk |grep NEEDED
+
+  NEEDED               libusb-1.0.so.0
+  NEEDED               libfftw3f.so.3
+  NEEDED               libzmq.so.5
+  NEEDED               libpython3.6m.so.1.0
+  NEEDED               libhidapi-hidraw.so.0
+  NEEDED               libQt5Multimedia.so.5
+  NEEDED               libQt5PrintSupport.so.5
+  NEEDED               libQt5Svg.so.5
+  NEEDED               libQt5Widgets.so.5
+  NEEDED               libQt5Gui.so.5
+  NEEDED               libQt5Network.so.5
+  NEEDED               libQt5Core.so.5
+  NEEDED               libpthread.so.0
+  NEEDED               libstdc++.so.6
+  NEEDED               libm.so.6
+  NEEDED               libgcc_s.so.1
+  NEEDED               libc.so.6
+
+dpkg -S libQt5Core.so.5
+
+
+Installing
+sudo dpkg -i ./pictalk_1.0.0_amd64.deb
+sudo apt-get -f install
+
+Removing:
+sudo dpkg -r pictalk
+
+
+

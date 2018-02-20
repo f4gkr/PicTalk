@@ -82,9 +82,6 @@ public slots:
 
     void SLOT_frameDetectorStateChanged( QString stateName );
     void SLOT_powerLevelChanged( float level ) ;
-    void SLOT_hasGpsFix(double latitude, double longitude );
-    void SLOT_hasGpsTime( int year, int month, int day,
-                          int hour, int min, int sec, int msec );
     void SLOT_FPSetsNewThreshold( float value );
 
 private:
