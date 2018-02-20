@@ -1,6 +1,8 @@
 # Binary Install for Ubuntu x86_64
 
-** WARNING ** this is a preliminary release please feedback any issue !
+**WARNING** this is a preliminary release please feedback any issue !
+
+***please check the issues section, there are so far some missing packages that need to be manually installed before the install pack is reworked***
 
 Works with **RTLSDR and SDRPlay RSP1/RSP1A ONLY** (RSP2 not supported !).
 
