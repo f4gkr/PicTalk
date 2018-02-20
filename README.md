@@ -9,6 +9,8 @@ This sotware requires Python 3.5/3.6 to be installed with the following Python P
 - Scipy
 - Numpy
 - ZMQ
+- Requets
+
 
 Depending on selected python version you want to use, you have to add to your system :
 - python3.6-dev or python3.5-dev
