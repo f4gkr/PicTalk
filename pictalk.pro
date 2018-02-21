@@ -121,7 +121,8 @@ SOURCES += \
     hardware/funcube/funcube.cpp \
     hardware/funcube/fcdwidget.cpp \
     hardware/audio/audioinput.cpp \
-    webinterface/webservice.cpp
+    webinterface/webservice.cpp \
+    ui/parameterswindow.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -169,7 +170,8 @@ HEADERS  += \
     hardware/funcube/fcdwidget.h \
     hardware/funcube/fcdhidcmd.h \
     hardware/audio/audioinput.h \
-    webinterface/webservice.h
+    webinterface/webservice.h \
+    ui/parameterswindow.h
 
 
 RESOURCES += \

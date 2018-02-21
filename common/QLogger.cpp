@@ -24,6 +24,7 @@
  ***************************************************************************************/
 #include <cstdarg>
 #include <QStandardPaths>
+#include "common/constants.h"
 namespace QLogger
 {
     void QLog_Trace(const QString &module, const QString &message)
@@ -176,7 +177,7 @@ namespace QLogger
             renamed = file.rename(_fileName, newName);
 
         }
-        _fileName = QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + _fileName ;
+        _fileName = QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) + "/" + _fileName ;
         file.setFileName(_fileName);
         if (file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append))
         {

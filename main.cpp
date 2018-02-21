@@ -33,10 +33,11 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 
+
 #include "common/constants.h"
 #include "mainwindow.h"
 #include "core/controller.h"
-
+#include "ui/parameterswindow.h"
 #include "hardware/rxhardwareselector.h"
 #include "common/QLogger.h"
 
@@ -82,6 +83,11 @@ int main(int argc, char *argv[])
     QLogger::QLog_Trace( LOGGER_NAME, "Build date : " + QString(BUILD_DATE));
     QLogger::QLog_Trace( LOGGER_NAME, "Starting" );
 
+    if( global.CALLSIGN.length() == 0 ) {
+        ParametersWindow *agui = new ParametersWindow();
+        agui->exec() ;
+    }
+
 
     Controller& control = Controller::getInstance() ;
 
@@ -89,6 +95,7 @@ int main(int argc, char *argv[])
     RxHardwareSelector *rxs = new RxHardwareSelector();
     radio = rxs->getReceiver() ;
     if( radio == NULL ) {
+
         QLogger::QLog_Error( LOGGER_NAME, "No SDR device connected, cannot continue.");
         msgBox.setWindowTitle( VER_PRODUCTNAME_STR );
         msgBox.setText("ERROR:  No SDR device detected !");
@@ -97,11 +104,11 @@ int main(int argc, char *argv[])
         return(-1);
     }
     // start web server
-    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk").exists() ) {
-        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk") ;
+    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER)).exists() ) {
+        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER)) ;
     }
 
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) + "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
     settings.beginGroup("WebServer");
     WebService *ws = new WebService(&a);
     HttpListener* webserver = new HttpListener( &settings, ws, &a);

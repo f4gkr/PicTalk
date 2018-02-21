@@ -38,6 +38,8 @@
 #include <QDate>
 #include <QTime>
 #include <stdint.h>
+#include <QUrl>
+
 
 #include "core/controller.h"
 #include "common/QLogger.h"
@@ -254,7 +256,7 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start( 500.0 );
 
     dec = NULL ;
-
+    networkManager = new QNetworkAccessManager(this);
 }
 
 void MainWindow::setRadio(RxDevice *device ) {
@@ -318,18 +320,42 @@ void MainWindow::PythonMessage( QString msg ) {
     pythonText->moveCursor (QTextCursor::End);
 }
 
+
+void MainWindow::uploadFrame( QString frame ) {
+    //https://picsat.obspm.fr/sids/index?locale=en
+    GlobalConfig& gc = GlobalConfig::getInstance() ;
+
+
+    QUrlQuery sids;
+    sids.addQueryItem("noradID", "43131");
+    sids.addQueryItem("source", gc.CALLSIGN);
+    sids.addQueryItem("locator", "latlong");
+    sids.addQueryItem("longitude", gc.mLatitude );
+    sids.addQueryItem("latitude",  gc.mLongitude );
+    QDateTime now = QDateTime::currentDateTime().toUTC() ;
+    sids.addQueryItem("timestamp", now.toString(Qt::ISODate) );
+    sids.addQueryItem("frame", frame.remove(' '));
+    QNetworkRequest request( QUrl("https://picsat.obspm.fr/sids/reportframe"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    networkManager->post(request, sids.toString(QUrl::FullyEncoded).toUtf8());
+}
+
+
+
 void MainWindow::PythonFrame( QString frame ) {
-    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk").exists() ) {
-        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk") ;
+    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) +"/" + QString(DATAFOLDER) ).exists() ) {
+        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) ) ;
     }
 
-    QFile file(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + QString(FRAMEFILE));
+    QFile file(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) + "/" + QString(FRAMEFILE));
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return;
 
     QTextStream out(&file);
     out << frame << "\n" ;
     file.close();
+
+    uploadFrame(frame);
 
     pythonText->moveCursor (QTextCursor::End);
     pythonText->insertPlainText ( "Frame: {\n" + frame + "\n}\n" );
@@ -401,7 +427,7 @@ void MainWindow::SLOT_startPressed() {
         return ;
 
     // Add section in file
-   QFile file( QApplication::applicationDirPath() + "/" + QString(FRAMEFILE));
+   QFile file( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) + "/" + QString(FRAMEFILE));
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return;
 
@@ -444,9 +470,6 @@ void MainWindow::SLOT_newSpectrum(int len , TuningPolicy *tp ) {
 
     Controller& ctrl = Controller::getInstance() ;
     ctrl.getSpectrum( power_dB );
-
-    //qDebug() << "SLOT_newSpectrum.channelizer_offset=" << tp->channelizer_offset/1e3 << " Kz." ;
-    //qDebug() << "SLOT_newSpectrum.rx_hardware_frequency=" << tp->rx_hardware_frequency/1e3 << " KHz." ;
 
     wf->blockSignals(true);
     wf->setSampleRate( radio->getRxSampleRate() );
@@ -500,17 +523,12 @@ void MainWindow::SLOT_powerLevel( float level )  {
 void MainWindow::SLOT_timer() {
     static int last_sec = 0;
     int utc_hour, utc_min, utc_sec  ;
-//    int utc_day, utc_month, utc_year ;
 
     QTime now = QDateTime::currentDateTimeUtc().time() ;
     utc_hour = now.hour();
     utc_min = now.minute();
     utc_sec = now.second();
 
-//    QDate today = QDate::currentDate();
-//    utc_day = today.day();
-//    utc_month = today.month();
-//    utc_year  = today.year();
 
     if( utc_sec != last_sec ) {
         last_sec = utc_sec ;

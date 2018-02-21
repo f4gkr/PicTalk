@@ -37,10 +37,11 @@
 
 GlobalConfig::GlobalConfig() {
 
-    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk").exists() ) {
-        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk") ;
+    if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) ).exists() ) {
+        QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) ) ;
     }
-    QSettings settings(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/pictalk/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+    QSettings settings(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) +"/" + QString(DATAFOLDER) +
+                       "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
 
     settings.beginGroup("Radio");
     if( !settings.contains("RX_FREQUENCY")) {
@@ -52,6 +53,19 @@ GlobalConfig::GlobalConfig() {
         if( (cRX_FREQUENCY < 0) || (cRX_FREQUENCY>10e9) ) {
             cRX_FREQUENCY = (qint64)DEFAULT_RX_FREQUENCY ;
         }
+    }
+    settings.endGroup();
+    mLatitude = "" ;
+    mLongitude = "" ;
+    CALLSIGN = "" ;
+
+    settings.beginGroup("Station");
+    if( settings.contains("mLatitude") && settings.contains("mLongitude")) {
+        mLatitude = settings.value("mLatitude").toString();
+        mLongitude = settings.value("mLongitude").toString();
+    }
+    if( settings.contains("CALLSIGN")) {
+        CALLSIGN = settings.value("CALLSIGN").toString() ;
     }
     settings.endGroup();
 }

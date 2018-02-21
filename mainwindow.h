@@ -36,6 +36,10 @@
 #include <QTabWidget>
 #include <QTextEdit>
 #include <QTimer>
+#include <QNetworkAccessManager>
+#include <QUrl>
+#include <QNetworkReply>
+
 #include "common/tuningpolicy.h"
 #include "ui/plotter.h"
 #include "hardware/rxdevice.h"
@@ -112,6 +116,9 @@ private:
     float threshold_level ;
     float min_level ;
     float max_level ;
+
+    QNetworkAccessManager *networkManager ;
+    void uploadFrame( QString frame );
 };
 
 #endif // MAINWINDOW_H

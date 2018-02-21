@@ -32,7 +32,7 @@
 #include "datatypes.h"
 #include "tuningpolicy.h"
 
-
+#define DATAFOLDER "PicTalk-data"
 #define LOGGER_NAME  "PicTalk"
 #define LOGGER_FILENAME "pictalk.log"
 #define VER_PRODUCTNAME_STR "pictalk"
@@ -100,6 +100,8 @@ public:
     qint64 cRX_FREQUENCY ;
     QString CALLSIGN ;
     QString LOCATOR ;
+    QString mLatitude ;
+    QString mLongitude;
 
     void getTuneParameters( qint64 frequencyOfInterest, TuningPolicy* tp ) ;
     qint64 getReceivedFrequency( TuningPolicy* tp );
