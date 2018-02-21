@@ -52,9 +52,9 @@ win32 {
 }
 
 linux {
-    LIBS += $$system("python3.6-config --libs")
-    QMAKE_CFLAGS += $$system("python3.6-config --cflags")
-    INCLUDEPATH += $$system("python3.6-config --includes |cut -c 3-")
+    LIBS += $$system("python3.5-config --libs")
+    QMAKE_CFLAGS += $$system("python3.5-config --cflags")
+    INCLUDEPATH += $$system("python3.5-config --includes |cut -c 3-")
     DESTDIR = $$PWD/bin
     contains( QMAKE_HOST.arch, arm.* ):{
         #specific instructions for RPiCompile
