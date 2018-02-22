@@ -55,7 +55,7 @@ ParametersWindow::ParametersWindow(QWidget *parent) : QDialog(parent)
     hl->addWidget( new QLabel(tr("Your latitude:")));
     sLatitude = new QLineEdit();
     sLatitude->setText( gc.mLatitude );
-    sLatitude->setToolTip( tr("Enter your latitude"));
+    sLatitude->setToolTip( tr("Example : 48.604N"));
     hl->addWidget( sLatitude );
     QWidget *wsLat = new QWidget();
     wsLat->setLayout( hl );
@@ -65,7 +65,7 @@ ParametersWindow::ParametersWindow(QWidget *parent) : QDialog(parent)
     hl->addWidget( new QLabel(tr("Your longitude:")));
     sLongitude = new QLineEdit();
     sLongitude->setText( gc.mLongitude );
-    sLongitude->setToolTip( tr("Enter your longitude"));
+    sLongitude->setToolTip( tr("Example : 1.792E"));
     hl->addWidget( sLongitude );
     QWidget *wsLon = new QWidget();
     wsLon->setLayout( hl );

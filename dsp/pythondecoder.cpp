@@ -118,7 +118,7 @@ void ZmqPython::run() {
                     // They are not processed here
                     for( int i=0 ; i < length - 2; i++ ) {
                          char c = rxbuff[i] ;
-                         if( ((int)c & 0xFF) <= 16 ) {
+                         if( ((int)c & 0xFF) < 16 ) { // thanks F5WK...
                             frame += "0" + QString::number( (int)c & 0xFF, 16) + " ";
                          } else {
                             frame += QString::number( (int)c & 0xFF, 16) + " ";
