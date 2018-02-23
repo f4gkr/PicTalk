@@ -97,6 +97,9 @@ public:
     }
 
     int ppm_error ;
+    int treshold ;
+    int rf_gain ;
+    int fft_rate ;
     QString cFIFO_FileName ;
     qint64 cRX_FREQUENCY ;
     QString CALLSIGN ;

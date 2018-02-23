@@ -96,17 +96,16 @@ MainWindow::MainWindow(QWidget *parent)
     stopButton->setToolTip(tr("Stop SDR"));
     crlayout->addWidget( stopButton );
 
+    GlobalConfig& cnf = GlobalConfig::getInstance() ;
+
     // Radio Control
     gain_rx = new gkDial(4,tr("RF Gain"));
     gain_rx->setScale(0,40);
-    gain_rx->setValue(10);
+    gain_rx->setValue(cnf.rf_gain);
     crlayout->addWidget(gain_rx);
     cb_layout->addWidget( cr_widget);
 
-
-
     // Waterfall display
-    GlobalConfig& cnf = GlobalConfig::getInstance() ;
     tabWidget = new QTabWidget();
     tabWidget->setContentsMargins(0,0,0,0);
     tabWidget->setTabPosition( QTabWidget::South );
@@ -156,10 +155,9 @@ MainWindow::MainWindow(QWidget *parent)
     cllayout->addWidget(zuluDisplay);
 
 
-
     fft_update_rate = new gkDial(4,tr("FFT Rate"));
     fft_update_rate->setScale(1,FFTRATE_MAX);
-    fft_update_rate->setValue(FFTRATE_MAX);
+    fft_update_rate->setValue(cnf.fft_rate);
     cllayout->addWidget(fft_update_rate);
 
 
