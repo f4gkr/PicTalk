@@ -159,8 +159,8 @@ namespace QLogger
         int MAX_SIZE = 1024 * 1024;
 
         QDir dir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) );
-        if (!dir.exists("pictalk") )
-            dir.mkdir("pictalk");
+        if (!dir.exists("PicTalk-data") )
+            dir.mkdir("PicTalk-data");
 
         QFile file(_fileName);
         QString toRemove = _fileName.section('.',-1);
