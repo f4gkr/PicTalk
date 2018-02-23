@@ -122,7 +122,12 @@ SOURCES += \
     hardware/funcube/fcdwidget.cpp \
     hardware/audio/audioinput.cpp \
     webinterface/webservice.cpp \
-    ui/parameterswindow.cpp
+    ui/parameterswindow.cpp \
+    hardware/airspy/airspy.c \
+    hardware/airspy/iqconverter_float.c \
+    hardware/airspy/iqconverter_int16.c \
+    hardware/airspydevice.cpp \
+    hardware/airspy/airspywidget.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -171,7 +176,14 @@ HEADERS  += \
     hardware/funcube/fcdhidcmd.h \
     hardware/audio/audioinput.h \
     webinterface/webservice.h \
-    ui/parameterswindow.h
+    ui/parameterswindow.h \
+    hardware/airspy/airspy.h \
+    hardware/airspy/airspy_commands.h \
+    hardware/airspy/iqconverter_float.h \
+    hardware/airspy/iqconverter_int16.h \
+    hardware/airspy/filters.h \
+    hardware/airspydevice.h \
+    hardware/airspy/airspywidget.h
 
 
 RESOURCES += \

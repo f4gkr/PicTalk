@@ -98,7 +98,7 @@ private:
     bool m_stop ;
     int m_state, next_state ;
     int reestimate_noise ;
-
+    int mFFT_SIZE ;
     double *spectrum ;
     double smin, smax ;
     double *hamming_coeffs ;

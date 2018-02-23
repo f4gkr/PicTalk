@@ -155,6 +155,8 @@ MainWindow::MainWindow(QWidget *parent)
     zuluDisplay->setPalette(zpalette) ;
     cllayout->addWidget(zuluDisplay);
 
+
+
     fft_update_rate = new gkDial(4,tr("FFT Rate"));
     fft_update_rate->setScale(1,FFTRATE_MAX);
     fft_update_rate->setValue(FFTRATE_MAX);
@@ -196,6 +198,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     cb_layout->addWidget( cl_widget);
+    cllayout->addWidget( new QLabel(tr("Uploaded frames:")));
+    reportedFrames = new QLCDNumber(4);
+    reportedFrames->setSegmentStyle(QLCDNumber::Flat);
+    reportedFrames->display( "0" );
+    reportedFrames->setToolTip(tr("Frames received and accepted by PicSat server"));
+    accepted_frames = 0 ;
+    cllayout->addWidget(reportedFrames);
 
 
     vlayout->addWidget( center_band );
@@ -257,6 +266,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     dec = NULL ;
     networkManager = new QNetworkAccessManager(this);
+    connect(networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(sidsSubmitted(QNetworkReply*)));
 }
 
 void MainWindow::setRadio(RxDevice *device ) {
@@ -330,16 +340,34 @@ void MainWindow::uploadFrame( QString frame ) {
     sids.addQueryItem("noradID", "43131");
     sids.addQueryItem("source", gc.CALLSIGN);
     sids.addQueryItem("locator", "latlong");
-    sids.addQueryItem("longitude", gc.mLatitude );
-    sids.addQueryItem("latitude",  gc.mLongitude );
+    // thanks Michel F5WK again for this one ;-)
+    sids.addQueryItem("latitude", gc.mLatitude );
+    sids.addQueryItem("longitude",  gc.mLongitude );
     QDateTime now = QDateTime::currentDateTime().toUTC() ;
     sids.addQueryItem("timestamp", now.toString(Qt::ISODate) );
     sids.addQueryItem("frame", frame.remove(' '));
     QNetworkRequest request( QUrl("https://picsat.obspm.fr/sids/reportframe"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
     networkManager->post(request, sids.toString(QUrl::FullyEncoded).toUtf8());
 }
 
+
+void MainWindow::sidsSubmitted(QNetworkReply *rep) {
+    if( rep->error() == QNetworkReply::NoError ) {
+        // Success
+        pythonText->moveCursor (QTextCursor::End);
+        pythonText->insertPlainText ( "Frame accepted by PicSat server\n" );
+        pythonText->moveCursor (QTextCursor::End);
+        accepted_frames++ ;
+        reportedFrames->display( QString::number(accepted_frames) );
+    } else {
+        pythonText->moveCursor (QTextCursor::End);
+        pythonText->insertPlainText ( "Network error or frame rejected\n" );
+        pythonText->moveCursor (QTextCursor::End);
+    }
+    rep->deleteLater();
+}
 
 
 void MainWindow::PythonFrame( QString frame ) {

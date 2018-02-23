@@ -54,6 +54,14 @@ GlobalConfig::GlobalConfig() {
             cRX_FREQUENCY = (qint64)DEFAULT_RX_FREQUENCY ;
         }
     }
+
+    ppm_error = 0 ;
+    if( settings.contains("PPM_ERROR")) {
+        ppm_error = settings.value("PPM_ERROR").toInt();
+    } else {
+        settings.setValue("PPM_ERROR", (int)0 );
+    }
+
     settings.endGroup();
     mLatitude = "" ;
     mLongitude = "" ;

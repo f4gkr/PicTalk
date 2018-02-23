@@ -3,6 +3,7 @@
 #include "hardware/funcube/funcube.h"
 #include "hardware/rtlsdr.h"
 #include "hardware/miricscpp.h"
+#include "airspydevice.h"
 
 RxHardwareSelector::RxHardwareSelector(QObject *parent) : QObject(parent)
 {
@@ -13,6 +14,13 @@ RxDevice *RxHardwareSelector::getReceiver() {
     FUNCube *fcdboard = NULL ;
     RTLSDR *dongle = NULL ;
     MiricsSDR *rsp = NULL ;
+    AirspyDevice *spy = NULL ;
+
+    spy = new AirspyDevice();
+    if( spy->getDeviceCount() > 0 ) {
+        return(spy);
+    }
+    delete spy ;
 
     rsp = new MiricsSDR(0);
     if( rsp->getDeviceCount() > 0 ) {

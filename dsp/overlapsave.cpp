@@ -52,7 +52,8 @@ OverlapSave::OverlapSave(int inSampleRate, int outSampleRate, QObject *parent) :
     DecimFactor = k-- ;
     m_outSampleRate = m_inSampleRate / DecimFactor ;
     Nrequired = FILTER_KERNEL_SIZE ;
-    if( OLAS_DEBUG ) qDebug() << "inSR" <<m_inSampleRate << " DecimFactor=" << DecimFactor << " outSR=" << m_outSampleRate << " wanted was " << outSampleRate;
+    if( OLAS_DEBUG ) qDebug() << "inSR" <<m_inSampleRate << " DecimFactor=" << DecimFactor
+                              << " outSR=" << m_outSampleRate << " wanted was " << outSampleRate;
     H = calc_filter(m_inSampleRate,0,m_inSampleRate/(DecimFactor*2.0), Nrequired, 55.0, &NTaps) ;
     if( OLAS_DEBUG ) qDebug() << "NTaps=" << NTaps <<  Nrequired ;
 

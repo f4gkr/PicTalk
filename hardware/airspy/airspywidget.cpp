@@ -27,57 +27,51 @@
 //or implied, of Sylvain AZARIAN F4GKR.
 //==========================================================================================
 
-#ifndef RXDEVICE_H
-#define RXDEVICE_H
-#include <QObject>
-#include <stdint.h>
-#include <qglobal.h>
-#include "common/tuningpolicy.h"
-#include "common/datatypes.h"
-#include "common/samplefifo.h"
+#include "airspywidget.h"
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
-class RxDevice: public QObject
+AirspyWidget::AirspyWidget(airspy_device *device, QWidget *parent) : QWidget(parent)
 {
-    Q_OBJECT
-public:    
-    explicit RxDevice(QObject *parent = 0);
-    ~RxDevice();
+    m_device = device ;
 
-    virtual void close() = 0 ;
+    QVBoxLayout *crlayout = new QVBoxLayout;
+    crlayout->setContentsMargins( 1,1,1,1);
+    crlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop  );
 
-    virtual int getDeviceCount() = 0 ;
-    virtual char* getHardwareName()= 0;
-    virtual int startAcquisition() = 0;
-    virtual int stopAcquisition() = 0;
+    lnaGain = new gkDial(4,tr("LNA Gain"));
+    lnaGain->setScale(0,16);
+    lnaGain->setValue(6);
+    crlayout->addWidget(lnaGain);
 
-    virtual int setRxSampleRate(uint32_t sampling_rate ) = 0;
-    virtual uint32_t getRxSampleRate() = 0;
+    mixerGain = new gkDial(4,tr("Mixer Gain"));
+    mixerGain->setScale(0,16);
+    mixerGain->setValue(6);
+    crlayout->addWidget(mixerGain);
 
-    virtual int setRxCenterFreq( TuningPolicy *freq_hz ) = 0 ;
-    virtual qint64 getRxCenterFreq() = 0 ;
+    vgaGain = new gkDial(4,tr("VGA Gain"));
+    vgaGain->setScale(0,16);
+    vgaGain->setValue(6);
+    crlayout->addWidget(vgaGain);
 
-    // this gives the physical limits (hardware limits) of the receiver by itself, without any RFE
-    virtual qint64 getMin_HWRx_CenterFreq() = 0  ;
-    virtual qint64 getMax_HWRx_CenterFreq() = 0   ;
+    setLayout(crlayout);
 
-    virtual int getFifoSize();
-    virtual SampleFifo *getFIFO() { return( fifo ); }
+    connect( lnaGain, SIGNAL(valueChanged(int)),
+             this, SLOT(SLOT_setLNAGain(int)) );
+    connect( mixerGain, SIGNAL(valueChanged(int)),
+             this, SLOT(SLOT_setMIXGain(int)) );
+    connect( vgaGain, SIGNAL(valueChanged(int)),
+             this, SLOT(SLOT_setVGAGain(int)) );
+}
 
-    virtual bool deviceHasSingleGainStage() { return( true ) ; }
-    virtual QWidget* getDisplayWidget() {return(NULL) ; }
+void AirspyWidget::SLOT_setLNAGain(int g) {
+    airspy_set_lna_gain( m_device, g );
+}
 
-    virtual int setRxGain(float db );
-    virtual float getRxGain();
-    virtual float getMinGain() ;
-    virtual float getMaxGain();
+void AirspyWidget::SLOT_setVGAGain(int g) {
+    airspy_set_vga_gain( m_device, g );
+}
 
-public slots:
-    void SLOT_start();
-    void SLOT_stop();
-
-protected:
-    SampleFifo *fifo ;
-
-};
-
-#endif // RXDEVICE_H
+void AirspyWidget::SLOT_setMIXGain(int g) {
+    airspy_set_mixer_gain( m_device, g);
+}

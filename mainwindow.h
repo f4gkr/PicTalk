@@ -88,8 +88,11 @@ private slots:
     void PythonAbsTune( QString freqabs );
     void PythonRelTune( QString reltune );
 
+    void sidsSubmitted( QNetworkReply *rep ) ;
+
 private:
     int received_frame ;
+    int accepted_frames;
     int msg_count ;
     QTabWidget *tabWidget ;
     CPlotter *wf ;
@@ -99,6 +102,7 @@ private:
     QVBoxLayout *crlayout  ;
     gkDial *detection_threshold ;
     QLCDNumber *zuluDisplay ;
+    QLCDNumber *reportedFrames ;
     QTimer *timer ;
 
     LedIndicator* decoding ;

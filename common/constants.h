@@ -96,6 +96,7 @@ public:
         return instance;
     }
 
+    int ppm_error ;
     QString cFIFO_FileName ;
     qint64 cRX_FREQUENCY ;
     QString CALLSIGN ;

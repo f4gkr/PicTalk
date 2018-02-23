@@ -27,57 +27,71 @@
 //or implied, of Sylvain AZARIAN F4GKR.
 //==========================================================================================
 
-#ifndef RXDEVICE_H
-#define RXDEVICE_H
-#include <QObject>
+#ifndef AIRSPY_H
+#define AIRSPY_H
+
+#include <pthread.h>
+#include <semaphore.h>
 #include <stdint.h>
-#include <qglobal.h>
+
+#include "hardware/rxdevice.h"
 #include "common/tuningpolicy.h"
 #include "common/datatypes.h"
 #include "common/samplefifo.h"
+#include "airspy/airspy.h"
+#include "airspy/airspywidget.h"
 
-class RxDevice: public QObject
+class AirspyDevice : public RxDevice
 {
     Q_OBJECT
-public:    
-    explicit RxDevice(QObject *parent = 0);
-    ~RxDevice();
+public:
+    AirspyDevice();
+    int getDeviceCount() { return( device_count ) ; }
+    char* getHardwareName();
 
-    virtual void close() = 0 ;
+    int startAcquisition();
+    int stopAcquisition();
+    void close();
 
-    virtual int getDeviceCount() = 0 ;
-    virtual char* getHardwareName()= 0;
-    virtual int startAcquisition() = 0;
-    virtual int stopAcquisition() = 0;
+    int setRxSampleRate(uint32_t sampling_rate) ;
+    uint32_t getRxSampleRate() {
+        return( sampling_rate );
+    }
 
-    virtual int setRxSampleRate(uint32_t sampling_rate ) = 0;
-    virtual uint32_t getRxSampleRate() = 0;
+    bool deviceHasSingleGainStage() { return( false ) ; }
 
-    virtual int setRxCenterFreq( TuningPolicy *freq_hz ) = 0 ;
-    virtual qint64 getRxCenterFreq() = 0 ;
+    int setRxCenterFreq( TuningPolicy *freq_hz );
+    qint64 getRxCenterFreq();
 
-    // this gives the physical limits (hardware limits) of the receiver by itself, without any RFE
-    virtual qint64 getMin_HWRx_CenterFreq() = 0  ;
-    virtual qint64 getMax_HWRx_CenterFreq() = 0   ;
+    qint64 getMin_HWRx_CenterFreq() ;
+    qint64 getMax_HWRx_CenterFreq() ;
 
-    virtual int getFifoSize();
-    virtual SampleFifo *getFIFO() { return( fifo ); }
+    QWidget* getDisplayWidget();
 
-    virtual bool deviceHasSingleGainStage() { return( true ) ; }
-    virtual QWidget* getDisplayWidget() {return(NULL) ; }
+    static int sdr_callback( airspy_transfer* transfer ) ;
+    struct airspy_device* device ;
+    sem_t mutex;
+    static  bool m_stop ;
+private:
 
-    virtual int setRxGain(float db );
-    virtual float getRxGain();
-    virtual float getMinGain() ;
-    virtual float getMaxGain();
+    char *hardwareName ;
+    int dev_index  ;
+    int device_count ;
 
-public slots:
-    void SLOT_start();
-    void SLOT_stop();
+    uint64_t freq_hz ; // current center freq
+    uint32_t sampling_rate ; // current sampling rate
 
-protected:
-    SampleFifo *fifo ;
+    float last_gain ;
+    int *gain_value ;
+    int gain_size ;
+    float gainMin, gainMax ;
+    pthread_t receive_thread ;
+    uint64_t min_tuner_freq ;
+    uint64_t max_tuner_freq ;
 
+    AirspyWidget* gui ;
+
+    int processData( TYPECPX* samples, int len ) ;
 };
 
-#endif // RXDEVICE_H
+#endif // AIRSPY_H

@@ -33,6 +33,7 @@
 
 #define STEP_SIZE 16384
 #define FFT_SPECTRUM_LEN 4096
+#define FFT_SPECTRUM_LEN_WIDE 16384
 
 Controller::Controller() : QThread(NULL)
 {
@@ -42,13 +43,12 @@ Controller::Controller() : QThread(NULL)
     m_state = Controller::csInit ;
     channelizer = NULL ;
     processor = new FrameProcessor();
-    fftin = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * FFT_SPECTRUM_LEN );
-    plan = fftwf_plan_dft_1d(FFT_SPECTRUM_LEN, fftin, fftin, FFTW_FORWARD, FFTW_ESTIMATE );
-    spectrum = (double *)malloc( FFT_SPECTRUM_LEN * sizeof(double));
-    hamming_coeffs = (double *)malloc( FFT_SPECTRUM_LEN * sizeof( double ));
-    memset( spectrum, 0, FFT_SPECTRUM_LEN );
-    semspectrum = new QSemaphore(1);
-    hamming_window( hamming_coeffs, FFT_SPECTRUM_LEN ) ;
+    mFFT_SIZE = FFT_SPECTRUM_LEN ;
+    fftin = NULL ;
+    plan = NULL ;
+    spectrum = NULL ;
+    hamming_coeffs = NULL ;
+
 
     connect( processor, SIGNAL(powerLevel(float)), this, SLOT(SLOT_powerLevelChanged(float)));
     connect( processor, SIGNAL(newState(QString)), this, SLOT(SLOT_frameDetectorStateChanged(QString)));
@@ -106,11 +106,24 @@ void Controller::setRadio(RxDevice *radio) {
 
     this->radio = radio ;
     channelizer = new OverlapSave( radio_rate, DEMODULATOR_SAMPLERATE );
-    if( radio_rate > 1e6 ) {
+    mFFT_SIZE = FFT_SPECTRUM_LEN ;
+
+    if( radio_rate > 5e6 ) {
+        channelizer->configure( 128*1024, 65536 );
+        mFFT_SIZE = FFT_SPECTRUM_LEN_WIDE ;
+    } else if( radio_rate > 1e6 ) {
         channelizer->configure( 128*1024, 16384 );
     } else {
         channelizer->configure( 32*1024, 16384 );
     }
+
+    fftin = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * mFFT_SIZE );
+    plan = fftwf_plan_dft_1d(mFFT_SIZE, fftin, fftin, FFTW_FORWARD, FFTW_ESTIMATE );
+    spectrum = (double *)malloc( mFFT_SIZE * sizeof(double));
+    hamming_coeffs = (double *)malloc( mFFT_SIZE * sizeof( double ));
+    memset( spectrum, 0, mFFT_SIZE );
+    semspectrum = new QSemaphore(1);
+    hamming_window( hamming_coeffs, mFFT_SIZE ) ;
 
     connect( this, SIGNAL(radioStart()), radio, SLOT(SLOT_start()), Qt::QueuedConnection );
     connect( this, SIGNAL(radioStop()), radio, SLOT(SLOT_stop()), Qt::QueuedConnection );
@@ -207,7 +220,7 @@ void Controller::run() {
             break ;
 
         case Controller::csStart:
-            for( i=0 ; i < FFT_SPECTRUM_LEN ; i++ ) {
+            for( i=0 ; i < mFFT_SIZE ; i++ ) {
                 spectrum[i] = -100 ;
             }
             if( radio != NULL )
@@ -269,11 +282,11 @@ void Controller::process( TYPECPX*samples, int L ) {
 
     //qDebug() << "Controller::process() L=" << L ;
 
-    if( (L >= FFT_SPECTRUM_LEN ) && (spectrum_interleave>0)){
+    if( (L >= mFFT_SIZE ) && (spectrum_interleave>0)){
         spectrum_interleave_value-- ;
         if( spectrum_interleave_value <= 0 ) {
             generateSpectrum(samples);
-            emit newSpectrumAvailable(FFT_SPECTRUM_LEN, tp );
+            emit newSpectrumAvailable(mFFT_SIZE, tp );
             spectrum_interleave_value = spectrum_interleave ;
         }
     }
@@ -314,12 +327,12 @@ void Controller::process( TYPECPX*samples, int L ) {
 
 void Controller::generateSpectrum( TYPECPX *samples ) {
     int i,j ;
-    double cpow = 2.0/FFT_SPECTRUM_LEN ;
+    double cpow = 2.0/mFFT_SIZE ;
 
     smin = 0 ;
     smax = -200 ;
     // apply window
-    for (i = 0;  i < FFT_SPECTRUM_LEN;i++)
+    for (i = 0;  i < mFFT_SIZE;i++)
     {
         fftin[i][0] = samples[i].re * hamming_coeffs[i];
         fftin[i][1] = samples[i].im * hamming_coeffs[i];
@@ -331,7 +344,7 @@ void Controller::generateSpectrum( TYPECPX *samples ) {
     semspectrum->acquire(1);
     // neg portion of spectrum
     j = 0 ;
-    for( i=FFT_SPECTRUM_LEN/2 ; i < FFT_SPECTRUM_LEN ; i++ ) {
+    for( i=mFFT_SIZE/2 ; i < mFFT_SIZE ; i++ ) {
         float a = fftin[i][0];
         float b = fftin[i][1];
         float modulus = sqrtf( a*a + b*b );
@@ -342,7 +355,7 @@ void Controller::generateSpectrum( TYPECPX *samples ) {
         j++ ;
     }
     // pos spectrum
-    for( i=0 ; i < FFT_SPECTRUM_LEN/2 ; i++ ) {
+    for( i=0 ; i < mFFT_SIZE/2 ; i++ ) {
         float a = fftin[i][0];
         float b = fftin[i][1];
         float modulus = sqrtf( a*a + b*b );
@@ -359,7 +372,7 @@ void  Controller::getSpectrum( double* values ) {
     if( values == NULL )
         return ;
     semspectrum->acquire(1);
-    memcpy( values, spectrum, FFT_SPECTRUM_LEN*sizeof(double));
+    memcpy( values, spectrum, mFFT_SIZE*sizeof(double));
     semspectrum->release(1);
 }
 
