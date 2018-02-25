@@ -41,6 +41,8 @@
 #include <QUrl>
 
 
+#include <iostream>
+
 #include "core/controller.h"
 #include "common/QLogger.h"
 #include "common/constants.h"
@@ -101,7 +103,8 @@ MainWindow::MainWindow(QWidget *parent)
     // Radio Control
     gain_rx = new gkDial(4,tr("RF Gain"));
     gain_rx->setScale(0,40);
-    gain_rx->setValue(cnf.rf_gain);
+    if (cnf.rf_gain == RF_NO_GAIN) gain_rx->setValue(10);
+    else gain_rx->setValue(cnf.rf_gain);
     crlayout->addWidget(gain_rx);
     cb_layout->addWidget( cr_widget);
 
@@ -162,13 +165,16 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     detection_threshold= new gkDial(4,tr("Threshold"));
-    threshold_level = (float)DEFAULT_AC_THRESHOLD ;
+    if (cnf.threshold>=0) threshold_level = cnf.threshold;
+    else threshold_level = (float)DEFAULT_AC_THRESHOLD ;
 #ifdef USE_CORRELATOR
     detection_threshold->setScale(1,100);
-    detection_threshold->setValue(DEFAULT_AC_THRESHOLD);
+    if (cnf.threshold>=0) detection_threshold->setValue(cnf.threshold);
+    else detection_threshold->setValue(DEFAULT_AC_THRESHOLD);
 #else
     detection_threshold->setScale(2,20);
-    detection_threshold->setValue(DEFAULT_DETECTION_THRESHOLD);
+    if (cnf.threshold>=0) detection_threshold->setValue(cnf.threshold);
+    else detection_threshold->setValue(DEFAULT_DETECTION_THRESHOLD);
 #endif
     cllayout->addWidget(detection_threshold);
 

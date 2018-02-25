@@ -86,6 +86,7 @@
 
 #define USE_CORRELATOR /* undef to use power */
 
+#define RF_NO_GAIN -9999
 
 class GlobalConfig : public QObject
 {
@@ -97,7 +98,7 @@ public:
     }
 
     int ppm_error ;
-    int treshold ;
+    int threshold ;
     int rf_gain ;
     int fft_rate ;
     QString cFIFO_FileName ;

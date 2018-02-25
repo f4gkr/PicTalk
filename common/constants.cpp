@@ -66,8 +66,16 @@ GlobalConfig::GlobalConfig() {
     if( settings.contains("RF_GAIN")) {
         rf_gain = settings.value("RF_GAIN").toInt();
     } else {
-        settings.setValue("RF_GAIN", (int)10 );
+        settings.setValue("RF_GAIN", (int)RF_NO_GAIN );
     }
+
+    threshold = 0 ;
+    if( settings.contains("THRESHOLD")) {
+        threshold = settings.value("THRESHOLD").toInt();
+    } else {
+        settings.setValue("THRESHOLD", (int)-1 );
+    }
+
 
     ppm_error = 0 ;
     if( settings.contains("PPM_ERROR")) {
