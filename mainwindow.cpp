@@ -41,8 +41,6 @@
 #include <QUrl>
 
 
-#include <iostream>
-
 #include "core/controller.h"
 #include "common/QLogger.h"
 #include "common/constants.h"
