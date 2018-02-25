@@ -1,3 +1,4 @@
+# This binary is outdated !!! please prefer the source distro for now - thanks
 # Binary Install for Ubuntu x86_64
 
 **WARNING** this is a preliminary release please feedback any issue !
