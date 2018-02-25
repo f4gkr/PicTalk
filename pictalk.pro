@@ -70,9 +70,9 @@ linux {
     LIBS += -lhidapi-hidraw
 }
 #https://stackoverflow.com/questions/42620074/gprof-produces-empty-output
-    QMAKE_CXXFLAGS += -pg -no-pie
-    QMAKE_CFLAGS += -pg -no-pie
-    QMAKE_LFLAGS += -pg -no-pie
+#    QMAKE_CXXFLAGS += -pg -no-pie
+#    QMAKE_CFLAGS += -pg -no-pie
+#    QMAKE_LFLAGS += -pg -no-pie
 
 SOURCES += \
     main.cpp\
