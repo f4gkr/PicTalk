@@ -299,6 +299,8 @@ void MainWindow::setRadio(RxDevice *device ) {
             crlayout->addWidget(  radio->getDisplayWidget() );
         }
     }
+    // set min level
+    wf->setMinDB( radio->getNoiseFloor() );
 
     GlobalConfig& gc = GlobalConfig::getInstance() ;
     mainFDisplay->setFrequency(gc.cRX_FREQUENCY);

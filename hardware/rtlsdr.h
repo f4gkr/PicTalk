@@ -64,6 +64,7 @@ public:
     bool setAutoGainMode();
     float getMinGain() { return( gainMin) ; }
     float getMaxGain() { return( gainMax) ; }
+    float getNoiseFloor() { return( -85 ) ; }
 
     int setRxCenterFreq( TuningPolicy *freq_hz );
     qint64 getRxCenterFreq();

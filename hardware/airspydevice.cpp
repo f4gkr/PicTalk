@@ -40,6 +40,8 @@
 
 void* airspy_acquisition_thread( void *params ) ;
 bool AirspyDevice::m_stop ;
+bool AirspyDevice::m_quit ;
+
 AirspyDevice::AirspyDevice()
 {
     int rc ;
@@ -67,11 +69,11 @@ AirspyDevice::AirspyDevice()
     airspy_get_samplerates(device, &num_rates, 0);
     uint32_t *samplerates = (uint32_t *) malloc(num_rates * sizeof(uint32_t));
     airspy_get_samplerates( device, samplerates, num_rates);
-    sampling_rate = 0 ;
-    // tune to the highest sampling rate available on the device
+    sampling_rate = 10e6 ;
+    // tune to the smallest sampling rate available on the device
     // depends on the type of Airspy
     for( uint32_t i=0 ; i < num_rates ; i++ ) {
-        if( samplerates[i] > sampling_rate ) {
+        if( samplerates[i] < sampling_rate ) {
             sampling_rate = samplerates[i] ;
         }
     }
@@ -85,9 +87,9 @@ AirspyDevice::AirspyDevice()
     airspy_set_samplerate( device, sampling_rate );
     airspy_set_packing( device, 1 ); // use packing
     airspy_set_sample_type( device, AIRSPY_SAMPLE_FLOAT32_IQ);
-    airspy_set_lna_gain( device, 6 );
-    airspy_set_vga_gain( device, 6 );
-    airspy_set_mixer_gain( device, 6);
+    airspy_set_lna_gain( device, 5 );
+    airspy_set_vga_gain( device, 5 );
+    airspy_set_mixer_gain( device, 5);
 
     hardwareName = (char *)malloc( 64 * sizeof( char ));
     sprintf( hardwareName, "AirSpy");
@@ -95,11 +97,13 @@ AirspyDevice::AirspyDevice()
     max_tuner_freq = 1900000000ul ;
     sem_init(&mutex, 0, 0);
     m_stop = false ;
+    m_quit = false ;
     pthread_create(&receive_thread, NULL, airspy_acquisition_thread, this );
 }
 
 void AirspyDevice::close() {
-
+    sem_post(&mutex);
+    m_quit = true ;
 }
 
 int AirspyDevice::setRxSampleRate(uint32_t sampling_rate) {
@@ -147,6 +151,7 @@ int AirspyDevice::startAcquisition() {
         return(0);
     }
 
+    m_stop = false ;
     sem_post(&mutex);
     return(1);
 }
@@ -154,6 +159,7 @@ int AirspyDevice::startAcquisition() {
 
 int AirspyDevice::stopAcquisition() {
     m_stop = true ;
+    airspy_stop_rx(device);
     return(1);
 }
 
@@ -168,7 +174,7 @@ int AirspyDevice::sdr_callback( airspy_transfer* transfer ) {
 
     AirspyDevice* my_device = (AirspyDevice*)transfer->ctx ;
     if( my_device->m_stop == true ) {
-        return(1) ; // this value will stop the AirSpy's thread - see airspy.c : 424
+        return(0) ; // this value will stop the AirSpy's thread - see airspy.c : 424
     }
 
     int sample_count = transfer->sample_count ;
@@ -203,8 +209,9 @@ void* airspy_acquisition_thread( void *params ) {
     int rc ;
     AirspyDevice* my_device = (AirspyDevice*)params ;
     airspy_device *device = my_device->device ;
-    while( !my_device->m_stop ) {
+    while( !my_device->m_quit ) {
         sem_wait( &my_device->mutex );
+
         airspy_set_samplerate( device, my_device->getRxSampleRate() );
         airspy_set_packing( device, 1 ); // use packing
         airspy_set_sample_type( device, AIRSPY_SAMPLE_FLOAT32_IQ);
@@ -212,7 +219,7 @@ void* airspy_acquisition_thread( void *params ) {
         rc = airspy_start_rx(device, &my_device->sdr_callback, (void *)my_device );
         if( rc == AIRSPY_SUCCESS ) {
             while (airspy_is_streaming(device) == AIRSPY_TRUE) {
-                 usleep(10000);
+                 usleep(20000);
             }
         }
     }

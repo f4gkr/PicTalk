@@ -1,8 +1,8 @@
 /*
 Copyright (c) 2012, Jared Boone <jared@sharebrained.com>
 Copyright (c) 2013, Michael Ossmann <mike@ossmann.com>
-Copyright (c) 2013/2014, Benjamin Vernoux <bvernoux@airspy.com>
-Copyright (C) 2013/2014, Youssef Touil <youssef@airspy.com>
+Copyright (c) 2013-2016, Benjamin Vernoux <bvernoux@airspy.com>
+Copyright (C) 2013-2016, Youssef Touil <youssef@airspy.com>
 
 All rights reserved.
 
@@ -28,13 +28,31 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <stdint.h>
 #include "airspy_commands.h"
 
-#define AIRSPY_VERSION "1.0.8"
+#define AIRSPY_VERSION "1.0.9"
 #define AIRSPY_VER_MAJOR 1
 #define AIRSPY_VER_MINOR 0
-#define AIRSPY_VER_REVISION 8
+#define AIRSPY_VER_REVISION 9
 
-#define ADDAPI
-#define ADDCALL
+#ifdef _WIN32
+	 #define ADD_EXPORTS
+	 
+	/* You should define ADD_EXPORTS *only* when building the DLL. */
+	#ifdef ADD_EXPORTS
+		#define ADDAPI __declspec(dllexport)
+	#else
+		#define ADDAPI __declspec(dllimport)
+	#endif
+
+	/* Define calling convention in one place, for convenience. */
+	#define ADDCALL __cdecl
+
+#else /* _WIN32 not defined. */
+
+	/* Define with no value on non-Windows OSes. */
+	#define ADDAPI
+	#define ADDCALL
+
+#endif
 
 #ifdef __cplusplus
 extern "C"
@@ -75,7 +93,6 @@ enum airspy_sample_type
 
 #define MAX_CONFIG_PAGE_SIZE (0x10000)
 
-
 struct airspy_device;
 
 typedef struct {
@@ -98,7 +115,6 @@ typedef struct {
 	uint32_t revision;
 } airspy_lib_version_t;
 
-
 typedef int (*airspy_sample_block_cb_fn)(airspy_transfer* transfer);
 
 extern ADDAPI void ADDCALL airspy_lib_version(airspy_lib_version_t* lib_version);
@@ -106,7 +122,9 @@ extern ADDAPI void ADDCALL airspy_lib_version(airspy_lib_version_t* lib_version)
 extern ADDAPI int ADDCALL airspy_init(void);
 /* airspy_exit() deprecated */
 extern ADDAPI int ADDCALL airspy_exit(void);
- 
+
+extern ADDAPI int ADDCALL airspy_list_devices(uint64_t *serials, int count);
+
 extern ADDAPI int ADDCALL airspy_open_sn(struct airspy_device** device, uint64_t serial_number);
 extern ADDAPI int ADDCALL airspy_open(struct airspy_device** device);
 extern ADDAPI int ADDCALL airspy_close(struct airspy_device* device);

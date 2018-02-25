@@ -71,6 +71,8 @@ public:
     virtual float getMinGain() ;
     virtual float getMaxGain();
 
+    virtual float getNoiseFloor() ;
+
 public slots:
     void SLOT_start();
     void SLOT_stop();

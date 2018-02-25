@@ -27,7 +27,7 @@
 #
 TARGET = pictalk
 TEMPLATE = app
-
+lessThan(QT_MAJOR_VERSION, 5): error("requires Qt 5")
 QT       += core gui multimedia
 DEFINES += BUILD_DATE='"\\\"$(shell  date +\"%Y%m%d\")\\\""'
 
@@ -52,6 +52,8 @@ win32 {
 }
 
 linux {
+
+
     LIBS += $$system("python3.5-config --libs")
     QMAKE_CFLAGS += $$system("python3.5-config --cflags")
     INCLUDEPATH += $$system("python3.5-config --includes |cut -c 3-")
@@ -61,14 +63,16 @@ linux {
 
     } else {
         # generic Linux compile...
-
+        DEFINES += USE_SSE2
+        QMAKE_CXXFLAGS  += -msse2
+        QMAKE_CFLAGS += -msse2
     }
     LIBS += -lhidapi-hidraw
 }
 #https://stackoverflow.com/questions/42620074/gprof-produces-empty-output
-#    QMAKE_CXXFLAGS += -pg -no-pie
-#    QMAKE_CFLAGS += -pg -no-pie
-#    QMAKE_LFLAGS += -pg -no-pie
+    QMAKE_CXXFLAGS += -pg -no-pie
+    QMAKE_CFLAGS += -pg -no-pie
+    QMAKE_LFLAGS += -pg -no-pie
 
 SOURCES += \
     main.cpp\
@@ -193,5 +197,6 @@ OTHER_FILES +=
 
 DISTFILES += \
     bin/python/decodeZ3.py \
-    PackagingNotes.txt
+    PackagingNotes.txt \
+    CHANGELOG.txt
 

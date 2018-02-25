@@ -415,7 +415,7 @@ print("\x1B]0;%s\x07" % msg)
 context = zmq.Context()
 
 # starting publisher for data packets
-print("Starting ZMQ publisher…")
+print("Starting ZMQ publisher")
 socket2 = context.socket(zmq.PUB)
 socket2.bind("tcp://*:5564")
 printzmq("Started ZMQ publisher.")

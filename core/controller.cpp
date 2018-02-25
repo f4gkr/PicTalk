@@ -281,6 +281,7 @@ void Controller::process( TYPECPX*samples, int L ) {
     int left = L ;
 
     //qDebug() << "Controller::process() L=" << L ;
+    //printf("L=%d\n", L );
 
     if( (L >= mFFT_SIZE ) && (spectrum_interleave>0)){
         spectrum_interleave_value-- ;

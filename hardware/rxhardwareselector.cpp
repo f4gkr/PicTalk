@@ -30,9 +30,8 @@ RxDevice *RxHardwareSelector::getReceiver() {
     delete rsp ;
     rsp = NULL ;
 /**
-
-There is a bug with the FUNCUBE implementation
-
+Is there is a bug with the FUNCUBE implementation ?
+**/
     // test FUNcube pro
     fcdboard = new FUNCube(true);
     if( fcdboard->getDeviceCount() > 0 ) {
@@ -47,7 +46,7 @@ There is a bug with the FUNCUBE implementation
     }
 
     fcdboard = NULL ;
-**/
+
     dongle = new RTLSDR(0);
     if( dongle->getDeviceCount() > 0 ) {
         if( dongle->setRxSampleRate( SYMBOL_RATE * 100 ) == 0 ) { // sampling rate is .960 MHz

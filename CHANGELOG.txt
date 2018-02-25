@@ -1,0 +1,11 @@
+25/02/2018
++ Compiled for SSE2 support by default now - remove section in pictalk.pro
++ AirSpy sample rate changed to 'lowest' instead of 'highest'. For example 2.5 MHz for the "AirSpy one"
++ AirSpy start/stop bug fixed
++ parameters checking : Lat/lon format tested at startup to check that fits with SiDS requirements
++ .pro file : added a section to warn that Qt5 is required
++ Added back the FUNCube support, one user has reported success - not sure that works ! (not convinced @home)
++ Initial low level for the Waterfall adatepted to the device (and its sensitivity)
++ removed a non-ascii char in the Python code
++ added a change log ;-)
+

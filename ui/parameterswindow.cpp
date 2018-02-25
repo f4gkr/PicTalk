@@ -90,10 +90,28 @@ ParametersWindow::ParametersWindow(QWidget *parent) : QDialog(parent)
 }
 
 void ParametersWindow::SLOT_save() {
+    bool valid = true ;
     GlobalConfig& gc = GlobalConfig::getInstance() ;
     gc.CALLSIGN = sCallSign->text() ;
+
     gc.mLatitude = sLatitude->text() ;
     gc.mLongitude = sLongitude->text() ;
+
+    if( !gc.mLatitude.endsWith('N') && !gc.mLatitude.endsWith('S')) {
+        valid = false ;
+    }
+    if( !gc.mLongitude.endsWith('E') && !gc.mLongitude.endsWith('W')) {
+        valid = false ;
+    }
+    if( !valid ) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle( VER_PRODUCTNAME_STR );
+        msgBox.setText("ERROR:  Your lat/lon values must end with letters (N/S or E/W)");
+        msgBox.setStandardButtons(QMessageBox::Yes );
+        msgBox.exec() ;
+        return ;
+    }
+
     if( !QDir( QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) ).exists() ) {
         QDir().mkpath(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) + "/" + QString(DATAFOLDER) ) ;
     }

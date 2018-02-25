@@ -65,13 +65,15 @@ public:
 
     qint64 getMin_HWRx_CenterFreq() ;
     qint64 getMax_HWRx_CenterFreq() ;
+    float getNoiseFloor() { return(-110); }
 
     QWidget* getDisplayWidget();
 
     static int sdr_callback( airspy_transfer* transfer ) ;
     struct airspy_device* device ;
     sem_t mutex;
-    static  bool m_stop ;
+    static bool m_stop ;
+    static bool m_quit ;
 private:
 
     char *hardwareName ;

@@ -83,7 +83,19 @@ int main(int argc, char *argv[])
     QLogger::QLog_Trace( LOGGER_NAME, "Build date : " + QString(BUILD_DATE));
     QLogger::QLog_Trace( LOGGER_NAME, "Starting" );
 
+    // make sure Station and Lat/lon settings are correct regarding
+    // SiDS constraints
+    bool valid = true ;
     if( global.CALLSIGN.length() == 0 ) {
+        valid = false ;
+    }
+    if( !global.mLatitude.endsWith('N') && !global.mLatitude.endsWith('S')) {
+        valid = false ;
+    }
+    if( !global.mLongitude.endsWith('E') && !global.mLongitude.endsWith('W')) {
+        valid = false ;
+    }
+    if( !valid ) {
         ParametersWindow *agui = new ParametersWindow();
         agui->exec() ;
     }

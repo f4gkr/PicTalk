@@ -44,3 +44,7 @@ void  RxDevice::SLOT_stop() {
     stopAcquisition() ;
 }
 
+
+float RxDevice::getNoiseFloor()  {
+    return( -100 );
+}
