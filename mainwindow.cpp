@@ -293,10 +293,12 @@ void MainWindow::setRadio(RxDevice *device ) {
     connect( &ctrl, SIGNAL(newState(QString)), this, SLOT(SLOT_frameDetectorStateChanged(QString)), Qt::QueuedConnection );
     connect( &ctrl, SIGNAL(newSNRThreshold(float)), this, SLOT(SLOT_NewSNRThreshold(float)), Qt::QueuedConnection );
 
+    GlobalConfig& cnf = GlobalConfig::getInstance() ;
     // adapt GUI to SDR
     if( device->deviceHasSingleGainStage() ) {
         gain_rx->setScale( device->getMinGain() ,device->getMaxGain() );
-        gain_rx->setValue( device->getRxGain()  );
+        if (cnf.rf_gain == RF_NO_GAIN) gain_rx->setValue( device->getRxGain() );
+        else gain_rx->setValue( cnf.rf_gain );
     } else {
         gain_rx->setVisible(false);
         if( radio->getDisplayWidget() != NULL ) {
