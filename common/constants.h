@@ -86,7 +86,7 @@
 
 #define USE_CORRELATOR /* undef to use power */
 
-#define RF_NO_GAIN -9999
+#define RF_NO_GAIN (-9999)
 
 class GlobalConfig : public QObject
 {
