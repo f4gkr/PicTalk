@@ -26,7 +26,6 @@
 //authors and should not be interpreted as representing official policies, either expressed
 //or implied, of Sylvain AZARIAN F4GKR.
 //==========================================================================================
-#include "pythondecoder.h"
 #include <zmq.h>
 #include <cmath>
 #ifndef _WIN32
@@ -34,6 +33,7 @@
 #else
 #include <QProcess>
 #endif
+#include "pythondecoder.h"
 #include <QByteArray>
 #include <QApplication>
 #include <QDebug>
