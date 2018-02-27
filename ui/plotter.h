@@ -57,6 +57,8 @@ public:
         resizeEvent(NULL);
     }
 
+    void setColorMap(float table[][3] ) ;
+
     void setNewFttData(double *fftData, int size);
     void setNewFttData(double *fftData, double *wfData, int size);
 
@@ -106,12 +108,6 @@ public:
         if( DEBUG_CPLOTTER ) qDebug() << "CPlotter::setHiLowCutFrequencies" << LowCut << HiCut ;
         m_DemodLowCutFreq = LowCut;
         m_DemodHiCutFreq = HiCut;
-//        int minSpan = HiCut - LowCut ;
-//        if( minSpan > m_Span) {
-//            m_Span = (qint32)minSpan;
-//            setFftCenterFreq(m_FftCenter);
-//            emit newSpan( m_Span );
-//        }
         drawOverlay();
     }
 

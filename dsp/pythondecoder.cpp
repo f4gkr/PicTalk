@@ -26,10 +26,14 @@
 //authors and should not be interpreted as representing official policies, either expressed
 //or implied, of Sylvain AZARIAN F4GKR.
 //==========================================================================================
+#include "pythondecoder.h"
 #include <zmq.h>
 #include <cmath>
+#ifndef _WIN32
 #include <Python.h>
-#include "pythondecoder.h"
+#else
+#include <QProcess>
+#endif
 #include <QByteArray>
 #include <QApplication>
 #include <QDebug>
@@ -45,7 +49,17 @@ PythonDecoder::PythonDecoder(QObject *parent) : QThread(parent)
 }
 
 void PythonDecoder::run() {
+#ifdef _WIN32
+    //mPythonScript = QApplication::applicationDirPath() + "/python/decodeZ3.py" ;
+    mPythonScript = "c:/Python36/decodeZ3.py" ;
+    QString program = "c:/Python36/python3.exe";
+    QStringList arguments;
+    arguments << mPythonScript ;
 
+    QProcess *py = new QProcess();
+    py->start( program, arguments );
+    py->deleteLater();
+#else
     QString pythonProgramName = "PythonPicsat" ;
     wchar_t array[1024];
 
@@ -59,11 +73,6 @@ void PythonDecoder::run() {
 
     pythonProgramName.toWCharArray(array);
     Py_SetProgramName(array);
-#ifdef _WIN32
-    wchar_t array2[1024];
-    QString("python3.6").toWCharArray(array2) ;
-    Py_SetPath(array2);
-#endif
     Py_Initialize();
     PySys_SetArgvEx(0,NULL,0);
 
@@ -83,6 +92,7 @@ void PythonDecoder::run() {
     }
     Py_Finalize();
     fclose(file);
+#endif
 }
 
 #define BUFFER_SIZE (1024)

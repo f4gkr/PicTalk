@@ -63,6 +63,11 @@ Controller::Controller() : QThread(NULL)
 
     spectrum_interleave = 1 ;
     spectrum_interleave_value = 1 ;
+
+    if( gc.fft_rate > 0 ) {
+        spectrum_interleave = gc.fft_rate ;
+    }
+
     reestimate_noise = 0 ;
     webs = NULL ;
 }

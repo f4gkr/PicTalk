@@ -48,7 +48,11 @@ FrameProcessor::FrameProcessor(QObject *parent) : QObject(parent)
 {
     m_bandwidth = 0 ;
 #ifdef USE_CORRELATOR
-    threshold = detection_threshold = 40 ;
+    GlobalConfig& gc = GlobalConfig::getInstance() ;
+    threshold = detection_threshold = DEFAULT_AC_THRESHOLD ;
+    if( gc.threshold > 0 ) {
+        threshold = detection_threshold = gc.threshold ;
+    }
 #else
     detection_threshold = DEFAULT_DETECTION_THRESHOLD ;
 #endif

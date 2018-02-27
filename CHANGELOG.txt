@@ -1,3 +1,12 @@
+27/02/2018
++ new colormaps for the waterfall with selection
++ Added user preferences save into pictalk.conf, now saving Threshold, FFT Refresh rate and Gain settings.
+  The gain settings value is okay for "single stage SDR" like RTLSDR or SDRPlay where only one knob is
+  required. For AirSpy where 3 values are required (LNA, Mix, VGA), this is not working yet.
++ Ongoing efforts to have the python correctly working for Windows, trying to call an external Windows shell
+  running Python.exe instead of binding python & the program. Net yet okay !
++ some edits in the files where the licence section was missing
+
 25/02/2018
 + Compiled for SSE2 support by default now - remove section in pictalk.pro
 + AirSpy sample rate changed to 'lowest' instead of 'highest'. For example 2.5 MHz for the "AirSpy one"

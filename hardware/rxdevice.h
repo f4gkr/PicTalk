@@ -73,6 +73,9 @@ public:
 
     virtual float getNoiseFloor() ;
 
+    virtual void loadSavedSettings() ;
+    virtual void saveSettings() ;
+
 public slots:
     void SLOT_start();
     void SLOT_stop();

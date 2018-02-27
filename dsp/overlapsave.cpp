@@ -129,7 +129,7 @@ void OverlapSave::setCenterOfWindow( float freq ) {
 
     int decal = (int)floorf( freq / bin_width );
     mix_phase = 0 ;
-    mix_offset = -freq/m_inSampleRate*2*M_PI ; //
+    mix_offset = -freq/m_inSampleRate*K_2PI ; //
     apply_postmixer = true ;
 
     for( int i=0 ; i < fft_size ; i++ ) {
@@ -317,7 +317,7 @@ void OverlapSave::razOutPhase() {
 }
 
 void OverlapSave::shiftOutputCenterFrequency( float offset_hz ) {
-    mix_offset += offset_hz/m_inSampleRate*2*M_PI ;
+    mix_offset += offset_hz/m_inSampleRate*K_2PI ;
 }
 
 // Faire la FFT d'un bloc de signal d'entree
@@ -400,8 +400,8 @@ void OverlapSave::step2() {
             double a = (double)fftin[p][0]; // fftout
             double b = (double)fftin[p][1];
             tmp_phase = mix_phase + p*mix_offset ;
-            if( fabs(tmp_phase) > 2*M_PI )
-                        tmp_phase -= ((tmp_phase>0) ? 2*M_PI : -2*M_PI);
+            if( fabs(tmp_phase) > K_2PI )
+                        tmp_phase -= ((tmp_phase>0) ? K_2PI : -K_2PI);
             double c = cos(tmp_phase) ;
             double d = sin(tmp_phase) ;
 
@@ -419,8 +419,8 @@ void OverlapSave::step2() {
     // remettre à jour le compteur de phase pour les mixages suivants
     if( apply_postmixer ) {
         mix_phase += (fft_size-overlap)*mix_offset ;
-        if( fabs(mix_phase) > 2*M_PI )
-                mix_phase -= ((mix_phase>0) ? 2*M_PI : -2*M_PI);
+        if( fabs(mix_phase) > K_2PI )
+                mix_phase -= ((mix_phase>0) ? K_2PI : -K_2PI);
     }
 
 
@@ -486,11 +486,11 @@ double *OverlapSave::calc_filter(double Fs, double Fa, double Fb, int M, double 
         qDebug() << "malloc error ~1" ;
         return(NULL);
     }
-    C = bessi0(Alpha*M_PI);
+    C = bessi0(Alpha*K_PI);
 
     for( k=0 ; k < len ; k++ ) {
         y = k*1.0/M - 1.0 ;
-        x = M_PI*Alpha*sqrt( 1 - y*y) ;
+        x = K_PI*Alpha*sqrt( 1 - y*y) ;
         W[k] = bessi0(x)/C ;
         //printf("h(%d)=%0.8f;\n", k+1, W[k]);
     }
@@ -500,7 +500,7 @@ double *OverlapSave::calc_filter(double Fs, double Fa, double Fb, int M, double 
         if( j == 0 ) {
             _H[k] = 2*(Fb-Fa)/Fs;
         } else {
-            _H[k] = 1/(K_PI*j)*(sin(2*M_PI*j*Fb/Fs)-sin(2*M_PI*j*Fa/Fs))*W[k];
+            _H[k] = 1/(K_PI*j)*(sin(K_2PI*j*Fb/Fs)-sin(K_2PI*j*Fa/Fs))*W[k];
         }
         k++ ;
     }

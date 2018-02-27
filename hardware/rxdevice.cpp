@@ -48,3 +48,11 @@ void  RxDevice::SLOT_stop() {
 float RxDevice::getNoiseFloor()  {
     return( -100 );
 }
+
+void RxDevice::loadSavedSettings() {
+    // to do !
+}
+
+void RxDevice::saveSettings() {
+    // to do !
+}

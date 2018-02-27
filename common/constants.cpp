@@ -100,6 +100,37 @@ GlobalConfig::GlobalConfig() {
     settings.endGroup();
 }
 
+// saves user value for detection threshold
+void GlobalConfig::saveNewThreshold( int value ) {
+    QSettings settings(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) +"/" + QString(DATAFOLDER) +
+                       "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+    settings.beginGroup("Radio");
+    settings.setValue("THRESHOLD", value );
+    settings.endGroup();
+}
+
+// saves user value for RF Gain
+// for radios having more than one stage (AirSpy etc), it is required to save
+// more than one... to be completed
+void GlobalConfig::saveNewGain( int stage, int value ) {
+    Q_UNUSED(stage);
+
+    QSettings settings(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) +"/" + QString(DATAFOLDER) +
+                       "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+    settings.beginGroup("Radio");
+    settings.setValue("RF_GAIN", value );
+    settings.endGroup();
+}
+
+// save user value for FFT refresh rate
+void GlobalConfig::saveNewFFTRate( int rate ) {
+    QSettings settings(QStandardPaths::writableLocation( QStandardPaths::HomeLocation) +"/" + QString(DATAFOLDER) +
+                       "/" + QString(CONFIG_FILENAME), QSettings::IniFormat);
+    settings.beginGroup("Radio");
+    settings.setValue("FFT_RATE", rate );
+    settings.endGroup();
+}
+
 
 void GlobalConfig::getTuneParameters(qint64 frequencyOfInterest , TuningPolicy *tp) {
 

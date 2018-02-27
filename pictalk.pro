@@ -39,21 +39,15 @@ QMAKE_CXXFLAGS += -std=c++11
 
 
 win32 {
-    # pkg-config --cflags --libs python3
+    # The Windows version does not call directly Pyhton from binary but starts
+    # an external process
     INCLUDEPATH += C:/msys64/usr/include
     LIBS += -lhidapi
-
-    # for python embed, see https://docs.python.org/3/extending/embedding.html
-    # paragraph 1.6. Compiling and Linking under Unix-like systems
-    INCLUDEPATH += C:/msys64/mingw64/include/python3.6m
-    QMAKE_LFLAGS += -LC:/msys64/mingw64/lib
-    LIBS += -lpython3.6m  -lversion -lm
     DESTDIR = /msys64/home/sylvain/code/pictalk_bindist
 }
 
 linux {
-
-
+    # change the python version below to 3.6 if you want
     LIBS += $$system("python3.5-config --libs")
     QMAKE_CFLAGS += $$system("python3.5-config --cflags")
     INCLUDEPATH += $$system("python3.5-config --includes |cut -c 3-")
@@ -99,7 +93,7 @@ SOURCES += \
     hardware/rxhardwareselector.cpp \
     hardware/rxdevice.cpp \
     hardware/rtlsdr.cpp \
-    hardware/miricscpp.cpp \ 
+    hardware/miricscpp.cpp \
     hardware/rtlsdr/tuner_r82xx.c \
     hardware/rtlsdr/tuner_fc2580.c \
     hardware/rtlsdr/tuner_fc0013.c \
@@ -187,7 +181,8 @@ HEADERS  += \
     hardware/airspy/iqconverter_int16.h \
     hardware/airspy/filters.h \
     hardware/airspydevice.h \
-    hardware/airspy/airspywidget.h
+    hardware/airspy/airspywidget.h \
+    ui/colormaps.h
 
 
 RESOURCES += \

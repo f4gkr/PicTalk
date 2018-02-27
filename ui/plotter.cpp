@@ -56,28 +56,29 @@ CPlotter::CPlotter(QWidget *parent) :
     setAttribute(Qt::WA_OpaquePaintEvent, false);
     setAttribute(Qt::WA_NoSystemBackground, true);
     setMouseTracking(true);
-
     // default waterfall color scheme
     for (int i = 0; i < 256; i++)
     {
-        // level 0: black background
-        if (i < 20)
-            m_ColorTbl[i].setRgb(0, 0, 0);
-        // level 1: black -> blue
-        else if ((i >= 20) && (i < 70))
-            m_ColorTbl[i].setRgb(0, 0, 140*(i-20)/50);
-        // level 2: blue -> light-blue / greenish
-        else if ((i >= 70) && (i < 100))
-            m_ColorTbl[i].setRgb(60*(i-70)/30, 125*(i-70)/30, 115*(i-70)/30 + 140);
-        // level 3: light blue -> yellow
-        else if ((i >= 100) && (i < 150))
-            m_ColorTbl[i].setRgb(195*(i-100)/50 + 60, 130*(i-100)/50 + 125, 255-(255*(i-100)/50));
-        // level 4: yellow -> red
-        else if ((i >= 150) && (i < 250))
-            m_ColorTbl[i].setRgb(255, 255-255*(i-150)/100, 0);
-        // level 5: red -> white
-        else if (i >= 250)
-            m_ColorTbl[i].setRgb(255, 255*(i-250)/5, 255*(i-250)/5);
+
+                // level 0: black background
+                if (i < 20)
+                    m_ColorTbl[i].setRgb(0, 0, 0);
+                // level 1: black -> blue
+                else if ((i >= 20) && (i < 70))
+                    m_ColorTbl[i].setRgb(0, 0, 140*(i-20)/50);
+                // level 2: blue -> light-blue / greenish
+                else if ((i >= 70) && (i < 100))
+                    m_ColorTbl[i].setRgb(60*(i-70)/30, 125*(i-70)/30, 115*(i-70)/30 + 140);
+                // level 3: light blue -> yellow
+                else if ((i >= 100) && (i < 150))
+                    m_ColorTbl[i].setRgb(195*(i-100)/50 + 60, 130*(i-100)/50 + 125, 255-(255*(i-100)/50));
+                // level 4: yellow -> red
+                else if ((i >= 150) && (i < 250))
+                    m_ColorTbl[i].setRgb(255, 255-255*(i-150)/100, 0);
+                // level 5: red -> white
+                else if (i >= 250)
+                    m_ColorTbl[i].setRgb(255, 255*(i-250)/5, 255*(i-250)/5);
+
     }
 
     m_PeakHoldActive=false;
@@ -150,6 +151,17 @@ CPlotter::CPlotter(QWidget *parent) :
 
 CPlotter::~CPlotter()
 {
+}
+
+void CPlotter::setColorMap(float table[][3]) {
+    for (int i = 0; i < 256; i++)
+    {
+        m_ColorTbl[i].setRgb(
+                            (int)(255*table[i][0]),
+                            (int)(255*table[i][1]),
+                            (int)(255*table[i][2])
+                        );
+    }
 }
 
 void CPlotter::setFftCenterFreq(qint64 f) {

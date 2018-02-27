@@ -44,6 +44,7 @@
 #include "core/controller.h"
 #include "common/QLogger.h"
 #include "common/constants.h"
+#include "ui/colormaps.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -101,8 +102,10 @@ MainWindow::MainWindow(QWidget *parent)
     // Radio Control
     gain_rx = new gkDial(4,tr("RF Gain"));
     gain_rx->setScale(0,40);
-    if (cnf.rf_gain == RF_NO_GAIN) gain_rx->setValue(10);
-    else gain_rx->setValue(cnf.rf_gain);
+    if (cnf.rf_gain == RF_NO_GAIN)
+        gain_rx->setValue(10);
+    else
+        gain_rx->setValue(cnf.rf_gain);
     crlayout->addWidget(gain_rx);
     cb_layout->addWidget( cr_widget);
 
@@ -123,6 +126,8 @@ MainWindow::MainWindow(QWidget *parent)
     wf->setMaxDB(-60.0);
     wf->setMinDB(-100);
     wf->setFftFill(true);
+    // load init color map, should come from the settings
+    wf->setColorMap(magma_cmap);
     tabWidget->addTab( wf,tr("Waterfall"));
 
     // add decoder ui
@@ -155,20 +160,32 @@ MainWindow::MainWindow(QWidget *parent)
     zuluDisplay->setPalette(zpalette) ;
     cllayout->addWidget(zuluDisplay);
 
+    // add colormap selection
+    QComboBox* cmapSel = new QComboBox();
+    cmapSel->setToolTip(tr("Change Waterfall colormap"));
+    cmapSel->addItem("Magma");
+    cmapSel->addItem("Inferno");
+    cmapSel->addItem("Plasma");
+    cmapSel->addItem("Viridis");
+    cllayout->addWidget(cmapSel);
 
     fft_update_rate = new gkDial(4,tr("FFT Rate"));
     fft_update_rate->setScale(1,FFTRATE_MAX);
     fft_update_rate->setValue(cnf.fft_rate);
     cllayout->addWidget(fft_update_rate);
 
-
     detection_threshold= new gkDial(4,tr("Threshold"));
-    if (cnf.threshold>=0) threshold_level = cnf.threshold;
-    else threshold_level = (float)DEFAULT_AC_THRESHOLD ;
+    if (cnf.threshold>=0)
+        threshold_level = cnf.threshold;
+    else
+        threshold_level = (float)DEFAULT_AC_THRESHOLD ;
+
 #ifdef USE_CORRELATOR
     detection_threshold->setScale(1,100);
-    if (cnf.threshold>=0) detection_threshold->setValue(cnf.threshold);
-    else detection_threshold->setValue(DEFAULT_AC_THRESHOLD);
+    if (cnf.threshold>=0)
+        detection_threshold->setValue(cnf.threshold);
+    else
+        detection_threshold->setValue(DEFAULT_AC_THRESHOLD);
 #else
     detection_threshold->setScale(2,20);
     if (cnf.threshold>=0) detection_threshold->setValue(cnf.threshold);
@@ -257,6 +274,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect( mainFDisplay, SIGNAL(newFrequency(qint64)),
              this, SLOT(SLOT_userTunesFreqWidget(qint64)) );
     connect( fft_update_rate, SIGNAL(valueChanged(int)), this, SLOT(SLOT_userChangesFFTRate(int)));
+    connect( cmapSel, SIGNAL(currentIndexChanged(int)), this, SLOT(SLOT_changeColormap(int)));
     connect( gain_rx, SIGNAL(valueChanged(int)), this, SLOT(SLOT_setRxGain(int)));
     connect( detection_threshold, SIGNAL(valueChanged(int)), this, SLOT(SLOT_setDetectionThreshold(int)));
 
@@ -487,6 +505,9 @@ void MainWindow::SLOT_stopPressed() {
 void MainWindow::SLOT_userChangesFFTRate(int value) {
     Controller& ctrl = Controller::getInstance() ;
     ctrl.setSpectrumInterleaveValue(value);
+
+    GlobalConfig& gc = GlobalConfig::getInstance() ;
+    gc.saveNewFFTRate(value);
 }
 
 
@@ -581,6 +602,10 @@ void MainWindow::SLOT_setRxGain(int g) {
         return ;
 
     radio->setRxGain( g );
+
+    GlobalConfig& gc = GlobalConfig::getInstance() ;
+    gc.saveNewGain(0, g);
+
     // Tell controller that noise level must be re-estimated
     Controller& ctrl = Controller::getInstance() ;
     ctrl.doNoiseEstimation();
@@ -590,6 +615,9 @@ void MainWindow::SLOT_setDetectionThreshold(int level) {
     Controller& ctrl = Controller::getInstance() ;
     ctrl.setDetectionThreshold(level);
     threshold_level = (float)level;
+
+    GlobalConfig& gc = GlobalConfig::getInstance() ;
+    gc.saveNewThreshold(level);
 }
 
 void MainWindow::SLOT_NewSNRThreshold( float value ) {
@@ -600,7 +628,15 @@ void MainWindow::SLOT_NewSNRThreshold( float value ) {
 #endif
 }
 
-
+void MainWindow::SLOT_changeColormap(int map) {
+    switch(map) {
+        case 0 : wf->setColorMap(magma_cmap); break ;
+        case 1 : wf->setColorMap(inferno_cmap); break ;
+        case 2 : wf->setColorMap(plasma_cmap); break ;
+    default:
+        wf->setColorMap(viridis_cmap); break ;
+    }
+}
 
 
 void MainWindow::endProgram() {

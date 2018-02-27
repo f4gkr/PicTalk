@@ -111,6 +111,9 @@ public:
     void getTuneParameters( qint64 frequencyOfInterest, TuningPolicy* tp ) ;
     qint64 getReceivedFrequency( TuningPolicy* tp );
 
+    void saveNewThreshold( int value );
+    void saveNewGain( int stage, int value );
+    void saveNewFFTRate( int rate );
 
 private:
 

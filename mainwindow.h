@@ -70,6 +70,7 @@ public slots:
 
 private slots:
     void SLOT_userChangesFFTRate(int value);
+    void SLOT_changeColormap( int map );
 
     void SLOT_userTunesFreqWidget(qint64 newFrequency);
     void SLOT_NewDemodFreq(qint64 freq, qint64 delta);
