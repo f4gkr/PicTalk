@@ -44,7 +44,7 @@ Is there is a bug with the FUNCUBE implementation ?
     if( fcdboard->getDeviceCount() > 0 ) {
         return(fcdboard);
     }
-
+    delete fcdboard ;
     fcdboard = NULL ;
 
     dongle = new RTLSDR(0);

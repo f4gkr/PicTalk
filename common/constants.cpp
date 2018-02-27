@@ -55,6 +55,28 @@ GlobalConfig::GlobalConfig() {
         }
     }
 
+    fft_rate = 0 ;
+    if( settings.contains("FFT_RATE")) {
+        fft_rate = settings.value("FFT_RATE").toInt();
+    } else {
+        settings.setValue("FFT_RATE", (int)FFTRATE_MAX );
+    }
+
+    rf_gain = 0 ;
+    if( settings.contains("RF_GAIN")) {
+        rf_gain = settings.value("RF_GAIN").toInt();
+    } else {
+        settings.setValue("RF_GAIN", (int)RF_NO_GAIN );
+    }
+
+    threshold = 0 ;
+    if( settings.contains("THRESHOLD")) {
+        threshold = settings.value("THRESHOLD").toInt();
+    } else {
+        settings.setValue("THRESHOLD", (int)-1 );
+    }
+
+
     ppm_error = 0 ;
     if( settings.contains("PPM_ERROR")) {
         ppm_error = settings.value("PPM_ERROR").toInt();
