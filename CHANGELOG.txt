@@ -1,3 +1,9 @@
+07/03/2018
++ rolling back decodeZ3.py to working version
++ RTLSDR : fixed ppm error processing when value < 0
++ display text content (printable chars) when a frame is received
++ Specific feature for the PicSat team: disable the SiDS upload if user callsign is NOSIDS (capital letters)
+
 27/02/2018
 + new colormaps for the waterfall with selection
 + Added user preferences save into pictalk.conf, now saving Threshold, FFT Refresh rate and Gain settings.

@@ -199,7 +199,7 @@ char* RTLSDR::getHardwareName() {
 
 int RTLSDR::setRxCenterFreq( TuningPolicy* freq_hz ) {
     GlobalConfig& gc = GlobalConfig::getInstance() ;
-    if( gc.ppm_error > 0 ) {
+    if( abs(gc.ppm_error) > 0 ) {
         //set frequency correction
         rtlsdr_set_freq_correction(rtlsdr_device,  gc.ppm_error );
     }

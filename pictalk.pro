@@ -39,8 +39,9 @@ QMAKE_CXXFLAGS += -std=c++11
 
 
 win32 {
-    # The Windows version does not call directly Pyhton from binary but starts
-    # an external process
+    LIBS += -lpython3.6m  -lversion -lm
+    QMAKE_CFLAGS += -Wno-unused-result -Wsign-compare -march=x86-64 -mtune=generic -O2 -pipe -fwrapv -D__USE_MINGW_ANSI_STDIO=1  -DNDEBUG  -DNDEBUG
+    INCLUDEPATH += C:/msys64/mingw64/include/python3.6m -IC:/msys64/mingw64/include/python3.6m
     INCLUDEPATH += C:/msys64/usr/include
     LIBS += -lhidapi
     DESTDIR = /msys64/home/sylvain/code/pictalk_bindist

@@ -26,14 +26,11 @@
 //authors and should not be interpreted as representing official policies, either expressed
 //or implied, of Sylvain AZARIAN F4GKR.
 //==========================================================================================
-#include "pythondecoder.h"
+
 #include <zmq.h>
 #include <cmath>
-#ifndef _WIN32
 #include <Python.h>
-#else
-#include <QProcess>
-#endif
+#include "pythondecoder.h"
 #include <QByteArray>
 #include <QApplication>
 #include <QDebug>
@@ -49,17 +46,6 @@ PythonDecoder::PythonDecoder(QObject *parent) : QThread(parent)
 }
 
 void PythonDecoder::run() {
-#ifdef _WIN32
-    //mPythonScript = QApplication::applicationDirPath() + "/python/decodeZ3.py" ;
-    mPythonScript = "c:/Python36/decodeZ3.py" ;
-    QString program = "c:/Python36/python3.exe";
-    QStringList arguments;
-    arguments << mPythonScript ;
-
-    QProcess *py = new QProcess();
-    py->start( program, arguments );
-    py->deleteLater();
-#else
     QString pythonProgramName = "PythonPicsat" ;
     wchar_t array[1024];
 
@@ -73,6 +59,9 @@ void PythonDecoder::run() {
 
     pythonProgramName.toWCharArray(array);
     Py_SetProgramName(array);
+#ifdef _WIN32
+    Py_SetPythonHome(L"C:\\msys64\\mingw64\\python3.6m");
+#endif
     Py_Initialize();
     PySys_SetArgvEx(0,NULL,0);
 
@@ -92,7 +81,6 @@ void PythonDecoder::run() {
     }
     Py_Finalize();
     fclose(file);
-#endif
 }
 
 #define BUFFER_SIZE (1024)
@@ -135,6 +123,21 @@ void ZmqPython::run() {
                          }
                     }
                     emit newFrame(frame) ;
+                    QString readableFrame = "" ;
+                    int readablecount = 0 ;
+                    for( int i=0 ; i < length - 2; i++ ) {
+                         char c = rxbuff[i] ;
+                         if( ((int)c >= 0x20 ) && ((int)c <= 0x7b)) {
+                             // printable
+                             readableFrame += c ;
+                             readablecount++ ;
+                         } else {
+                             readableFrame += "." ;
+                         }
+                    }
+                    if( readablecount > 0 ) {
+                        emit message( "Frame is>" +readableFrame + "\n" ) ;
+                    }
                 }
             }
 

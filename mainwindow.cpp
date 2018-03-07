@@ -345,7 +345,6 @@ void MainWindow::setRadio(RxDevice *device ) {
     }
     dec = new PythonDecoder();
     dec->start(); // start the decoder
-
 }
 
 void MainWindow::PythonMessage( QString msg ) {
@@ -358,7 +357,10 @@ void MainWindow::PythonMessage( QString msg ) {
 void MainWindow::uploadFrame( QString frame ) {
     //https://picsat.obspm.fr/sids/index?locale=en
     GlobalConfig& gc = GlobalConfig::getInstance() ;
-
+    if( "NOSIDS" == gc.CALLSIGN) {
+        // specific call to disable SiDS transmit
+        return ;
+    }
 
     QUrlQuery sids;
     sids.addQueryItem("noradID", "43131");
