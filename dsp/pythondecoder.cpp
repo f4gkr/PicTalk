@@ -26,19 +26,14 @@
 //authors and should not be interpreted as representing official policies, either expressed
 //or implied, of Sylvain AZARIAN F4GKR.
 //==========================================================================================
-<<<<<<< HEAD
 
-=======
->>>>>>> 848a9efc301152370baf150331e396da7326d733
 #include <zmq.h>
 #include <cmath>
+#ifndef _WIN32
 #include <Python.h>
-<<<<<<< HEAD
-=======
 #else
 #include <QProcess>
 #endif
->>>>>>> 848a9efc301152370baf150331e396da7326d733
 #include "pythondecoder.h"
 #include <QByteArray>
 #include <QApplication>
