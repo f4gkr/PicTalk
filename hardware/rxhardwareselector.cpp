@@ -44,13 +44,15 @@ RxDevice *RxHardwareSelector::getReceiver() {
     MiricsSDR *rsp = NULL ;
     AirspyDevice *spy = NULL ;
 
+    GlobalConfig& cnf = GlobalConfig::getInstance() ;
+
     spy = new AirspyDevice();
     if( spy->getDeviceCount() > 0 ) {
         return(spy);
     }
     delete spy ;
 
-    rsp = new MiricsSDR(0);
+    rsp = new MiricsSDR(cnf.device_index);
     if( rsp->getDeviceCount() > 0 ) {
         rsp->setRxSampleRate(1536*1000);
         return( rsp );
@@ -75,7 +77,7 @@ Is there is a bug with the FUNCUBE implementation ?
     delete fcdboard ;
     fcdboard = NULL ;
 
-    dongle = new RTLSDR(0);
+    dongle = new RTLSDR(cnf.device_index);
     if( dongle->getDeviceCount() > 0 ) {
         if( dongle->setRxSampleRate( SYMBOL_RATE * 100 ) == 0 ) { // sampling rate is .960 MHz
             return(dongle);

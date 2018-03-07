@@ -69,6 +69,14 @@ GlobalConfig::GlobalConfig() {
         settings.setValue("RF_GAIN", (int)RF_NO_GAIN );
     }
 
+    device_index = 0 ;
+    if (settings.contains("DEVICE_INDEX")) {
+      device_index = settings.value("DEVICE_INDEX").toInt();
+    }
+    else {
+      settings.setValue("DEVICE_INDEX", 0);
+    }
+
     threshold = 0 ;
     if( settings.contains("THRESHOLD")) {
         threshold = settings.value("THRESHOLD").toInt();
