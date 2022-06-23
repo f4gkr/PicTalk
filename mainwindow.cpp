@@ -363,7 +363,7 @@ void MainWindow::uploadFrame( QString frame ) {
     }
 
     QUrlQuery sids;
-    sids.addQueryItem("noradID", "43131");
+    sids.addQueryItem("noradID", "43132");
     sids.addQueryItem("source", gc.CALLSIGN);
     sids.addQueryItem("locator", "latlong");
     // thanks Michel F5WK again for this one ;-)
