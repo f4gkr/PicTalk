@@ -378,6 +378,32 @@ void MainWindow::uploadFrame( QString frame ) {
     networkManager->post(request, sids.toString(QUrl::FullyEncoded).toUtf8());
 }
 
+void MainWindow::uploadSatnogs( QString frame ) {
+    // https://db.satnogs.org/api/telemetry/
+    GlobalConfig& gc = GlobalConfig::getInstance() ;
+    if( "NOSIDS" == gc.CALLSIGN) {
+        // specific call to disable SiDS transmit
+        return ;
+    }
+
+    QUrlQuery sids;
+    sids.addQueryItem("noradID", "43132");
+    sids.addQueryItem("source", gc.CALLSIGN);
+    QDateTime now = QDateTime::currentDateTime().toUTC() ;
+    sids.addQueryItem("timestamp", now.toString(Qt::ISODate) );
+    sids.addQueryItem("locator", "latlong");
+    sids.addQueryItem("longitude",  gc.mLongitude );
+    sids.addQueryItem("latitude", gc.mLatitude );
+    sids.addQueryItem("frame", frame.remove(' '));
+    sids.addQueryItem("satnogs_network", "False");
+    sids.addQueryItem("observation_id", "");
+    sids.addQueryItem("station_id", "");
+    QNetworkRequest request( QUrl("https://db.satnogs.org/api/telemetry/"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    networkManager->post(request, sids.toString(QUrl::FullyEncoded).toUtf8());
+}
+
 
 void MainWindow::sidsSubmitted(QNetworkReply *rep) {
     if( rep->error() == QNetworkReply::NoError ) {
@@ -409,6 +435,7 @@ void MainWindow::PythonFrame( QString frame ) {
     out << frame << "\n" ;
     file.close();
 
+    uploadSatnogs(frame);
     uploadFrame(frame);
 
     pythonText->moveCursor (QTextCursor::End);

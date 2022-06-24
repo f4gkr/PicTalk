@@ -124,6 +124,7 @@ private:
 
     QNetworkAccessManager *networkManager ;
     void uploadFrame( QString frame );
+    void uploadSatnogs( QString frame );
 };
 
 #endif // MAINWINDOW_H
