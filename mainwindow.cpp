@@ -379,7 +379,7 @@ void MainWindow::uploadFrame( QString frame ) {
 }
 
 void MainWindow::uploadSatnogs( QString frame ) {
-    // https://db-dev.satnogs.org/api/telemetry/ -or- https://db.satnogs.org/api/telemetry/
+    // https://db.satnogs.org/api/telemetry/
     GlobalConfig& gc = GlobalConfig::getInstance() ;
     if( "NOSIDS" == gc.CALLSIGN) {
         // specific call to disable SiDS transmit
