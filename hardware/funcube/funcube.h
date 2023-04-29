@@ -32,8 +32,8 @@
 
 #include <QThread>
 #include <QComboBox>
-#include <hidapi/hidapi.h>
 #include <pthread.h>
+
 #include <semaphore.h>
 #include <stdint.h>
 #include "hardware/rxdevice.h"
@@ -41,7 +41,7 @@
 #include "common/datatypes.h"
 #include "common/samplefifo.h"
 #include "hardware/audio/audioinput.h"
-
+#include "hidapi_libusb.h"
 
 /** \brief FCD mode enumeration. */
 typedef enum {

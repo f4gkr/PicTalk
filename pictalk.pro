@@ -28,30 +28,36 @@
 TARGET = pictalk
 TEMPLATE = app
 lessThan(QT_MAJOR_VERSION, 5): error("requires Qt 5")
-QT       += core gui multimedia
+QT      += core gui multimedia widgets
+QT      += opengl
+QT      += printsupport
+QT      += svg
+QWT_CONFIG += QwtPlot
+QWT_CONFIG += QwtSvg
+QWT_CONFIG += QwtWidgets
+
+DEFINES += QWT_MOC_INCLUDE=1
 DEFINES += BUILD_DATE='"\\\"$(shell  date +\"%Y%m%d\")\\\""'
 
 include( httpserver/httpserver.pri)
-include( qwt/qwt.pri )
+include( qwt/src.pri )
 
 LIBS +=  -lusb-1.0 -lpthread -lfftw3f -lm -lzmq
-QMAKE_CXXFLAGS += -std=c++11
 
 
-win32 {
-    LIBS += -lpython3.6m  -lversion -lm
-    QMAKE_CFLAGS += -Wno-unused-result -Wsign-compare -march=x86-64 -mtune=generic -O2 -pipe -fwrapv -D__USE_MINGW_ANSI_STDIO=1  -DNDEBUG  -DNDEBUG
-    INCLUDEPATH += C:/msys64/mingw64/include/python3.6m -IC:/msys64/mingw64/include/python3.6m
-    INCLUDEPATH += C:/msys64/usr/include
-    LIBS += -lhidapi
-    DESTDIR = /msys64/home/sylvain/code/pictalk_bindist
-}
+#win32 {
+#    LIBS += -lpython3.6m  -lversion -lm
+#    QMAKE_CFLAGS += -Wno-unused-result -Wsign-compare -march=x86-64 -mtune=generic -O2 -pipe -fwrapv -D__USE_MINGW_ANSI_STDIO=1  -DNDEBUG  -DNDEBUG
+#    INCLUDEPATH += C:/msys64/mingw64/include/python3.6m -IC:/msys64/mingw64/include/python3.6m
+#    INCLUDEPATH += C:/msys64/usr/include
+#    DESTDIR = /msys64/home/sylvain/code/pictalk_bindist
+#}
 
 linux {
-    # change the python version below to 3.6 if you want
-    LIBS += $$system("python3.5-config --libs")
-    QMAKE_CFLAGS += $$system("python3.5-config --cflags")
-    INCLUDEPATH += $$system("python3.5-config --includes |cut -c 3-")
+    LIBS += $$system("python3.10-config --libs")
+    LIBS += -lpython3.10
+    QMAKE_CFLAGS += $$system("python3.10-config --cflags")
+    INCLUDEPATH += $$system("python3.10-config --includes |cut -c 3-")
     DESTDIR = $$PWD/bin
     contains( QMAKE_HOST.arch, arm.* ):{
         #specific instructions for RPiCompile
@@ -62,7 +68,7 @@ linux {
         QMAKE_CXXFLAGS  += -msse2
         QMAKE_CFLAGS += -msse2
     }
-    LIBS += -lhidapi-hidraw
+
 }
 #https://stackoverflow.com/questions/42620074/gprof-produces-empty-output
 #    QMAKE_CXXFLAGS += -pg -no-pie
@@ -70,6 +76,7 @@ linux {
 #    QMAKE_LFLAGS += -pg -no-pie
 
 SOURCES += \
+    hardware/funcube/hid.cpp \
     main.cpp\
     mainwindow.cpp \
     ui/spectrumplot.cpp \
@@ -129,6 +136,8 @@ SOURCES += \
     hardware/airspy/airspywidget.cpp
 
 HEADERS  += \
+    hardware/funcube/hidapi.h \
+    hardware/funcube/hidapi_libusb.h \
     mainwindow.h \
     ui/spectrumplot.h \
     ui/qcustomplot.h \
