@@ -1,5 +1,18 @@
 # PicTalk
 
+## UPDATED ON April, 29th 2023  
+
+Following several requests to update the software and make sure it compiles on Ubuntu 22.04 with recent Python, the following has been done :
+
+- Migration to QWT 6.2
+- Rework of the .pro file to have it compiling for Python 3.10
+
+It has not been tested on the air...
+
+-------------------------------------
+
+## Original README
+
 this is the the PicTalk software, an attempt to provide an "all in one" software to enable reception and decoding of PicSat telemetry and scientific data.
 
 Current version (as of 21st of Feb 2018) supports SDRPlay RSP1/A and RTLSDR. Funcube is not working properly (frequency management issue) and will be added soon.
