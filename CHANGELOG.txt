@@ -1,3 +1,7 @@
+29/04/2022
++ updated to QWT 6.8 / Ubuntu 22.04 / Python 3.10
++ HID support integrated, not needing external libs
+
 07/03/2018
 + rolling back decodeZ3.py to working version
 + RTLSDR : fixed ppm error processing when value < 0
